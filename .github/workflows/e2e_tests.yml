@@ -41,7 +41,7 @@ jobs:
           id: setup-python
           with:
             python-version: '3.10'
-        - name: Run core tests
+        - name: Run performance test
           run: |
             pip install tox-uv
-            tox -e coretest-py310
+            tox -e performancetest-py310
