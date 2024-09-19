@@ -61,4 +61,5 @@ def load_scenarios() -> list[TestCase]:
 @pytest.mark.parametrize("scenario", load_scenarios())
 def test_performance_test(scenario: TestCase):
     """Run the performance test for the given scenario."""
-    scenario.execute_testcase()
+    print(scenario.execute_testcase())
+    assert 1 == 0
