@@ -1,0 +1,37 @@
+"""SimulateExperimentTestCase.
+
+This module contains a test case for simulating an experiment.
+
+Attributes:
+    SIMULATE_EXPERIMENT_TEST_CASES (list): A list of SimulateExperimentTestCase objects.
+"""
+
+from pandas import Interval
+
+from baybe.campaign import Campaign
+from baybe.objective import SingleTargetObjective
+from baybe.searchspace import SearchSpace
+from baybe.targets import NumericalTarget, TargetMode
+from tests.performance_tests.test_logic.testcases_classes import (
+    SimulateExperimentTestCase,
+)
+from tests.performance_tests.testcases import (
+    LOOKUP_STRUCTURE,
+    PARAMETER_COMBINATION,
+)
+
+SIMULATE_EXPERIMENT_TEST_CASES: SimulateExperimentTestCase = [
+    SimulateExperimentTestCase(
+        Campaign(
+            searchspace=SearchSpace.from_product(
+                parameters=PARAMETER_COMBINATION["aryl_halides_mordred"],
+            ),
+            objective=SingleTargetObjective(
+                target=NumericalTarget(name="yield", mode=TargetMode.MAX)
+            ),
+        ),
+        lookup=LOOKUP_STRUCTURE["aryl_halides"],
+        batch_size=2,
+        n_doe_iterations=60,
+    )
+]

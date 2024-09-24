@@ -5,14 +5,15 @@ intensive example szenarios and persisting the results so that they can be
 compared between different versions of the package.
 """
 
-import json
 import os
 
 import pytest
 
-from tests.performance_tests.test_logic.testcases_classes import (
-    TestCase,
-    TypeOfTestCase,
+from tests.performance_tests.test_logic.testcases_classes import TestCase
+from tests.performance_tests.testcases import (
+    SCENARIO_TEST_CASES,
+    SIMULATE_EXPERIMENT_TEST_CASES,
+    TRANSPHER_LEARNING_TEST_CASES,
 )
 
 pytestmark = pytest.mark.skipif(
@@ -21,45 +22,22 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def get_json_testcase_pathes() -> list[str]:
-    """Get the pathes to the json files containing the testcases.
+def combine_simulations() -> list[TestCase]:
+    """Combines different sets of test cases into a single list.
 
     Returns:
-        list[str]: A list of file paths to the json files containing the testcases.
+        list[TestCase]: A list containing all the test cases from SCENARIO_TEST_CASES,
+        SIMULATE_EXPERIMENT_TEST_CASES, and TRANSPHER_LEARNING_TEST_CASES.
     """
-    RELATIVE_FOLDER_PATH = "tests/performance_tests/testcases"
-    return [
-        RELATIVE_FOLDER_PATH + "/" + file
-        for file in os.listdir(RELATIVE_FOLDER_PATH)
-        if file.endswith(".json")
-    ]
+    return (
+        SCENARIO_TEST_CASES
+        + SIMULATE_EXPERIMENT_TEST_CASES
+        + TRANSPHER_LEARNING_TEST_CASES
+    )
 
 
-def load_scenarios() -> list[TestCase]:
-    """Load the scenarios from the json file.
-
-    This function is used to load the scenarios from the json files in the
-    testcases folder. The scenarios are seperated by the type of testcase
-    which are defined in the TypeOfTestCase enum. There, the corresponding
-    string representation of the type is used to get the correct class to
-    load the testcase and prepare it for the test run.
-
-    Returns:
-        List[TestCase]: A list of test cases loaded from the json files.
-    """
-    test_cases = []
-    list_of_json_files = get_json_testcase_pathes()
-    for file_path in list_of_json_files:
-        with open(file_path) as json_file:
-            testcase = json.load(json_file)
-            case_type = testcase["type"]
-            test_case_class = TypeOfTestCase.get_test_case_class(case_type)
-            test_cases.append(test_case_class.from_json(testcase))
-    return test_cases
-
-
-@pytest.mark.parametrize("scenario", load_scenarios())
+@pytest.mark.parametrize("scenario", combine_simulations())
 def test_performance_test(scenario: TestCase):
     """Run the performance test for the given scenario."""
     print(scenario.execute_testcase())
-    assert 1 == 0
+    assert False  # This is a placeholder for the actual test
