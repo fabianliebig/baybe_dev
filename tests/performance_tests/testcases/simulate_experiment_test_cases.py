@@ -6,7 +6,8 @@ Attributes:
     SIMULATE_EXPERIMENT_TEST_CASES (list): A list of SimulateExperimentTestCase objects.
 """
 
-from pandas import Interval
+from typing import List
+from uuid import UUID
 
 from baybe.campaign import Campaign
 from baybe.objective import SingleTargetObjective
@@ -20,8 +21,9 @@ from tests.performance_tests.testcases import (
     PARAMETER_COMBINATION,
 )
 
-SIMULATE_EXPERIMENT_TEST_CASES: SimulateExperimentTestCase = [
+SIMULATE_EXPERIMENT_TEST_CASES: List[SimulateExperimentTestCase] = [
     SimulateExperimentTestCase(
+        UUID("23df40f6-243c-49ca-ae71-81d733d8a88d"),
         Campaign(
             searchspace=SearchSpace.from_product(
                 parameters=PARAMETER_COMBINATION["aryl_halides_mordred"],

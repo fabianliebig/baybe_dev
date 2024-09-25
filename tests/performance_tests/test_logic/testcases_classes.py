@@ -10,6 +10,7 @@ furture implementations.
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any, Literal
+from uuid import UUID
 
 from attrs import define
 from pandas import DataFrame
@@ -25,6 +26,11 @@ from baybe.simulation import (
 @define
 class TestCase(ABC):
     """Baseinterface for performance test cases."""
+
+    unique_id: UUID
+    """A unique identifier for the testcase which is used to
+    compare the results over time. A UUID object is used which must be created
+    and set manually"""
 
     @abstractmethod
     def execute_testcase(self) -> DataFrame:

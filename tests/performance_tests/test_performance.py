@@ -6,6 +6,7 @@ compared between different versions of the package.
 """
 
 import os
+from typing import List
 
 import pytest
 
@@ -22,22 +23,38 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def combine_simulations() -> list[TestCase]:
+def all_test_cases_uniquely_identifiable(test_case_list: List[TestCase]) -> bool:
+    """Check if all test cases have unique names.
+
+    Returns:
+        bool: True if all test cases have unique names, False otherwise.
+    """
+    unique_uuids = set([testcase.unique_id for testcase in test_case_list])
+    return len(test_case_list) == len(unique_uuids)
+
+
+def combine_simulations() -> List[TestCase]:
     """Combines different sets of test cases into a single list.
 
     Returns:
-        list[TestCase]: A list containing all the test cases from SCENARIO_TEST_CASES,
+        List[TestCase]: A list containing all the test cases from SCENARIO_TEST_CASES,
         SIMULATE_EXPERIMENT_TEST_CASES, and TRANSPHER_LEARNING_TEST_CASES.
     """
-    return (
+    testcase_list: List[TestCase] = (
         SCENARIO_TEST_CASES
         + SIMULATE_EXPERIMENT_TEST_CASES
         + TRANSPHER_LEARNING_TEST_CASES
     )
+    if not all_test_cases_uniquely_identifiable(testcase_list):
+        raise ValueError(
+            "All test cases must have unique "
+            "names to compare their results over time."
+        )
+    return testcase_list
 
 
 @pytest.mark.parametrize("scenario", combine_simulations())
-def test_performance_test(scenario: TestCase):
+def test_performance_test(scenario: TestCase) -> None:
     """Run the performance test for the given scenario."""
     print(scenario.execute_testcase())
     assert False  # This is a placeholder for the actual test

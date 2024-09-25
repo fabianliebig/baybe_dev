@@ -6,13 +6,18 @@ parameters for a performance test.
 
 from typing import Sequence
 
-from baybe.parameters import NumericalDiscreteParameter, SubstanceParameter
+from baybe.parameters import (
+    NumericalDiscreteParameter,
+    SubstanceEncoding,
+    SubstanceParameter,
+)
 from baybe.parameters.base import Parameter
 
 PARAMETER_COMBINATION: Sequence[Parameter] = {
     "aryl_halides_mordred": [
         SubstanceParameter(
             name="base",
+            encoding=SubstanceEncoding.MORDRED,
             data={
                 "BTMG": "CN(C)/C(N(C)C)=N\\C(C)(C)C",
                 "MTBD": "CN1CCCN2CCCN=C12",
@@ -21,6 +26,7 @@ PARAMETER_COMBINATION: Sequence[Parameter] = {
         ),
         SubstanceParameter(
             name="ligand",
+            encoding=SubstanceEncoding.MORDRED,
             data={
                 "XPhos": "CC(C)C1=CC(C(C)C)=CC(C(C)C)=C1C2=C(P(C3"
                 "CCCCC3)C4CCCCC4)C=CC=C2",
@@ -34,6 +40,7 @@ PARAMETER_COMBINATION: Sequence[Parameter] = {
         ),
         SubstanceParameter(
             name="additive",
+            encoding=SubstanceEncoding.MORDRED,
             data={
                 "3,5-dimethylisoxazole": "Cc1onc(C)c1",
                 "3-methyl-5-phenylisoxazole": "Cc1cc(on1)c2ccccc2",
@@ -64,6 +71,7 @@ PARAMETER_COMBINATION: Sequence[Parameter] = {
         ),
         SubstanceParameter(
             name="aryl_halide",
+            encoding=SubstanceEncoding.MORDRED,
             data={
                 "1-bromo-4-(trifluoromethyl)benzene": "FC(F)(F)c1ccc(Br)cc1",
                 "1-bromo-4-ethylbenzene": "CCc1ccc(Br)cc1",
@@ -86,6 +94,7 @@ PARAMETER_COMBINATION: Sequence[Parameter] = {
     "direct_arylation_mordred": [
         SubstanceParameter(
             name="Base",
+            encoding=SubstanceEncoding.MORDRED,
             data={
                 "Potassium acetate": "O=C([O-])C.[K+]",
                 "Potassium pivalate": "O=C([O-])C(C)(C)C.[K+]",
@@ -95,6 +104,7 @@ PARAMETER_COMBINATION: Sequence[Parameter] = {
         ),
         SubstanceParameter(
             name="Ligand",
+            encoding=SubstanceEncoding.MORDRED,
             data={
                 "BrettPhos": "CC(C)C1=CC(C(C)C)=C(C(C(C)C)=C1)C2=C(P(C3CCCCC3)"
                 "C4CCCCC4)C(OC)=CC=C2OC",
@@ -117,6 +127,7 @@ PARAMETER_COMBINATION: Sequence[Parameter] = {
         ),
         SubstanceParameter(
             name="Solvent",
+            encoding=SubstanceEncoding.MORDRED,
             data={
                 "DMAc": "CC(N(C)C)=O",
                 "Butyornitrile": "CCCC#N",

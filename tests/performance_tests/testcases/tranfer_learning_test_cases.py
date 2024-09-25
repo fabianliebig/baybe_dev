@@ -5,7 +5,8 @@ Attributes:
     objects representing the test cases.
 """
 
-from pandas import Interval
+from typing import List
+from uuid import UUID
 
 from baybe.campaign import Campaign
 from baybe.objective import SingleTargetObjective
@@ -19,8 +20,9 @@ from tests.performance_tests.testcases import (
     PARAMETER_COMBINATION,
 )
 
-TRANSPHER_LEARNING_TEST_CASES: SimulateTransferLearningTestCase = [
+TRANSPHER_LEARNING_TEST_CASES: List[SimulateTransferLearningTestCase] = [
     SimulateTransferLearningTestCase(
+        UUID("abefe05d-b6ca-45cf-a9fa-1dce9144eadc"),
         Campaign(
             searchspace=SearchSpace.from_product(
                 parameters=PARAMETER_COMBINATION["direct_arylation_mordred"],
