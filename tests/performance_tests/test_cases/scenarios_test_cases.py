@@ -10,12 +10,12 @@ from baybe.campaign import Campaign
 from baybe.objective import SingleTargetObjective
 from baybe.searchspace import SearchSpace
 from baybe.targets import NumericalTarget, TargetMode
-from tests.performance_tests.test_logic.testcases_classes import (
-    SimulateScenariosTestCase,
-)
-from tests.performance_tests.testcases import (
+from tests.performance_tests.test_cases import (
     LOOKUP_STRUCTURE,
     PARAMETER_COMBINATION,
+)
+from tests.performance_tests.test_logic.testcases_classes import (
+    SimulateScenariosTestCase,
 )
 
 SCENARIO_TEST_CASES: List[SimulateScenariosTestCase] = [

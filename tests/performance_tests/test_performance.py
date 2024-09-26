@@ -1,7 +1,7 @@
 """End-to-end tests for the performance of the baybe package.
 
-Tests the performacnce of the baybe package by executing long running and compute
-intensive example szenarios and persisting the results so that they can be
+Tests the performance of the baybe package by executing long running and compute
+intensive example scenarios and persisting the results so that they can be
 compared between different versions of the package.
 """
 
@@ -10,12 +10,12 @@ from typing import List
 
 import pytest
 
-from tests.performance_tests.test_logic.testcases_classes import TestCase
-from tests.performance_tests.testcases import (
+from tests.performance_tests.test_cases import (
     SCENARIO_TEST_CASES,
     SIMULATE_EXPERIMENT_TEST_CASES,
-    TRANSPHER_LEARNING_TEST_CASES,
+    TRANSFER_LEARNING_TEST_CASES,
 )
+from tests.performance_tests.test_logic.testcases_classes import TestCase
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("BAYBE_TEST_ENV") != "PERFORMANCETEST",
@@ -43,7 +43,7 @@ def combine_simulations() -> List[TestCase]:
     testcase_list: List[TestCase] = (
         SCENARIO_TEST_CASES
         + SIMULATE_EXPERIMENT_TEST_CASES
-        + TRANSPHER_LEARNING_TEST_CASES
+        + TRANSFER_LEARNING_TEST_CASES
     )
     if not all_test_cases_uniquely_identifiable(testcase_list):
         raise ValueError(
