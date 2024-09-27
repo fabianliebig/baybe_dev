@@ -36,7 +36,7 @@ class TestMetaDataAndResult:
     def to_dict(self) -> dict[str, Any]:
         """Convert the object to a dictionary without the dataframe result."""
         return {
-            "unique_id": self.unique_id,
+            "unique_id": str(self.unique_id),
             "title": self.title,
             "metadata": self.metadata,
         }
