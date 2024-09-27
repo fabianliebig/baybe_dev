@@ -104,7 +104,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             Key=f"{bucket_path}/result.csv",
             Body=result.result.to_csv(),
             ContentType="text/csv",
-            Metadata=result.to_json(),
+            Metadata=result.to_dict(),
         )
 
     def load_compare_result(self, experiment_id: UUID) -> DataFrame:
