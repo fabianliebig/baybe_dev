@@ -4,7 +4,7 @@ Each `Parameter` object represents a specific combination of
 parameters for a performance test.
 """
 
-from typing import Sequence
+from typing import Dict, Sequence
 
 from baybe.parameters import (
     NumericalDiscreteParameter,
@@ -13,7 +13,7 @@ from baybe.parameters import (
 )
 from baybe.parameters.base import Parameter
 
-PARAMETER_COMBINATION: Sequence[Parameter] = {
+PARAMETER_COMBINATION: Dict[str, Sequence[Parameter]] = {
     "aryl_halides_mordred": [
         SubstanceParameter(
             name="base",
@@ -135,8 +135,8 @@ PARAMETER_COMBINATION: Sequence[Parameter] = {
                 "p-Xylene": "CC1=CC=C(C)C=C1",
             },
         ),
-        NumericalDiscreteParameter(name="Concentration", values=[0.057, 0.1, 0.153]),
-        NumericalDiscreteParameter(name="Temp_C", values=[90, 105, 120]),
+        NumericalDiscreteParameter(name="Concentration", values=(0.057, 0.1, 0.153)),
+        NumericalDiscreteParameter(name="Temp_C", values=(90, 105, 120)),
     ],
     "direct_arylation_rdkit": [
         SubstanceParameter(
@@ -182,7 +182,7 @@ PARAMETER_COMBINATION: Sequence[Parameter] = {
                 "p-Xylene": "CC1=CC=C(C)C=C1",
             },
         ),
-        NumericalDiscreteParameter(name="Concentration", values=[0.057, 0.1, 0.153]),
-        NumericalDiscreteParameter(name="Temp_C", values=[90, 105, 120]),
+        NumericalDiscreteParameter(name="Concentration", values=(0.057, 0.1, 0.153)),
+        NumericalDiscreteParameter(name="Temp_C", values=(90, 105, 120)),
     ],
 }

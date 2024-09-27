@@ -1,6 +1,6 @@
 """This module contains the test cases for simulating scenarios.
 
-The `SCENARIO_TEST_CASES` variable is a list of `SimulateScenariosTestCase` objects.
+The `SCENARIO_TEST_CASES` variable is a Sequence of `SimulateScenariosTestCase` objects.
 """
 
 from typing import List
@@ -14,14 +14,16 @@ from tests.performance_tests.test_cases import (
     LOOKUP_STRUCTURE,
     PARAMETER_COMBINATION,
 )
-from tests.performance_tests.test_logic.testcases_classes import (
+from tests.performance_tests.utils import (
     SimulateScenariosTestCase,
 )
 
 SCENARIO_TEST_CASES: List[SimulateScenariosTestCase] = [
     SimulateScenariosTestCase(
-        UUID("abefe05d-b6ca-45cf-a9fa-1dce9144eadc"),
-        {
+        unique_id=UUID("abefe05d-b6ca-45cf-a9fa-1dce9144eadc"),
+        title="Direct Arylation Scenario Simulation maximum"
+        " yield with Mordred and RDKit",
+        scenarios={
             "Mordred": Campaign(
                 searchspace=SearchSpace.from_product(
                     parameters=PARAMETER_COMBINATION["direct_arylation_mordred"],
@@ -30,7 +32,7 @@ SCENARIO_TEST_CASES: List[SimulateScenariosTestCase] = [
                     target=NumericalTarget(name="yield", mode=TargetMode.MAX)
                 ),
             ),
-            "": Campaign(
+            "RDKit": Campaign(
                 searchspace=SearchSpace.from_product(
                     parameters=PARAMETER_COMBINATION["direct_arylation_rdkit"],
                 ),
