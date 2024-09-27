@@ -35,10 +35,13 @@ class TestMetaDataAndResult:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert the object to a dictionary without the dataframe result."""
+        removed_none_metadata = {
+            key: value for key, value in self.metadata.items() if value is not None
+        }
         return {
             "unique_id": str(self.unique_id),
             "title": self.title,
-            "metadata": self.metadata,
+            "metadata": removed_none_metadata,
         }
 
     def to_json(self) -> str:
