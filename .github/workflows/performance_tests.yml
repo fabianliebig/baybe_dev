@@ -23,6 +23,8 @@ jobs:
     coretest:
       needs: add-runner
       runs-on: self-hosted
+      env:
+          BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME: ${{ secrets.TEST_RESULT_S3_BUCKET }}
       name: Core Tests 3.10
       steps:
         - uses: actions/checkout@v4
