@@ -7,6 +7,7 @@ also by other non functional properties like runtime or memory consumption in
 furture implementations.
 """
 
+import json
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any, Literal
@@ -24,6 +25,28 @@ from baybe.simulation import (
 
 
 @define
+class TestMetaDataAndResult:
+    """A class to store the metadata and the result of a test case."""
+
+    result: DataFrame
+    unique_id: UUID
+    title: str
+    metadata: dict[str, Any]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert the object to a dictionary without the dataframe result."""
+        return {
+            "unique_id": self.unique_id,
+            "title": self.title,
+            "metadata": self.metadata,
+        }
+
+    def to_json(self) -> str:
+        """Convert the object to a JSON string."""
+        return json.dumps(self.to_dict())
+
+
+@define
 class TestCase(ABC):
     """Baseinterface for performance test cases."""
 
@@ -31,9 +54,11 @@ class TestCase(ABC):
     """A unique identifier for the testcase which is used to
     compare the results over time. A UUID object is used which must be created
     and set manually"""
+    title: str
+    """A title for the testcase which describes the purpose of the testcase."""
 
     @abstractmethod
-    def execute_testcase(self) -> DataFrame:
+    def execute_testcase(self) -> TestMetaDataAndResult:
         """Run the testcase.
 
         The method actually starts the performance test and returns the result
@@ -62,14 +87,13 @@ class SimulateScenariosTestCase(TestCase):
     random_seed: int | None = None
     impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = "error"
     noise_percent: float | None = None
-    description: str | None = None
 
-    def execute_testcase(self) -> DataFrame:
+    def execute_testcase(self) -> TestMetaDataAndResult:
         """Execute the simulate_scenarios testcase.
 
         See :func:`baybe.simulation.scenarios.simulate_scenarios` for more information.
         """
-        return simulate_scenarios(
+        result = simulate_scenarios(
             self.scenarios,
             self.lookup,
             batch_size=self.batch_size,
@@ -80,6 +104,20 @@ class SimulateScenariosTestCase(TestCase):
             random_seed=self.random_seed,
             impute_mode=self.impute_mode,
             noise_percent=self.noise_percent,
+        )
+        return TestMetaDataAndResult(
+            result=result,
+            unique_id=self.unique_id,
+            title=self.title,
+            metadata={
+                "DOE iterations": self.n_doe_iterations,
+                "batch size": self.batch_size,
+                "groupby": self.groupby,
+                "MC iterations": self.n_mc_iterations,
+                "impute mode": self.impute_mode,
+                "noise percent": self.noise_percent,
+                "random seed": self.random_seed,
+            },
         )
 
 
@@ -93,26 +131,36 @@ class SimulateTransferLearningTestCase(TestCase):
     """
 
     campaign: Campaign
-    lookup: DataFrame | Callable | None = None
+    lookup: DataFrame
     batch_size: int = 1
     n_doe_iterations: int | None = None
     groupby: list[str] | None = None
     n_mc_iterations: int = 1
-    description: str | None = None
 
-    def execute_testcase(self) -> DataFrame:
+    def execute_testcase(self) -> TestMetaDataAndResult:
         """Execute the simulate_transfer_learning testcase.
 
         See :func:`baybe.simulation.transfer_learning.simulate_transfer_learning`
         for more information.
         """
-        return simulate_transfer_learning(
+        result = simulate_transfer_learning(
             self.campaign,
             self.lookup,
             batch_size=self.batch_size,
             n_doe_iterations=self.n_doe_iterations,
             groupby=self.groupby,
             n_mc_iterations=self.n_mc_iterations,
+        )
+        return TestMetaDataAndResult(
+            result=result,
+            unique_id=self.unique_id,
+            title=self.title,
+            metadata={
+                "DOE iterations": self.n_doe_iterations,
+                "batch size": self.batch_size,
+                "groupby": self.groupby,
+                "MC iterations": self.n_mc_iterations,
+            },
         )
 
 
@@ -133,15 +181,14 @@ class SimulateExperimentTestCase(TestCase):
     random_seed: int | None = None
     impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = "error"
     noise_percent: float | None = None
-    description: str | None = None
 
-    def execute_testcase(self) -> DataFrame:
+    def execute_testcase(self) -> TestMetaDataAndResult:
         """Execute the simulate_experiment testcase.
 
         See :func:`baybe.simulation.core.simulate_experiment`
         for more information.
         """
-        return simulate_experiment(
+        result = simulate_experiment(
             self.campaign,
             self.lookup,
             batch_size=self.batch_size,
@@ -150,4 +197,16 @@ class SimulateExperimentTestCase(TestCase):
             random_seed=self.random_seed,
             impute_mode=self.impute_mode,
             noise_percent=self.noise_percent,
+        )
+        return TestMetaDataAndResult(
+            result=result,
+            unique_id=self.unique_id,
+            title=self.title,
+            metadata={
+                "DOE iterations": self.n_doe_iterations,
+                "batch size": self.batch_size,
+                "impute mode": self.impute_mode,
+                "noise percent": self.noise_percent,
+                "random seed": self.random_seed,
+            },
         )

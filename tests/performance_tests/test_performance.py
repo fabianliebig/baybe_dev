@@ -6,7 +6,7 @@ compared between different versions of the package.
 """
 
 import os
-from typing import List
+from typing import Sequence
 
 import pytest
 
@@ -15,7 +15,11 @@ from tests.performance_tests.test_cases import (
     SIMULATE_EXPERIMENT_TEST_CASES,
     TRANSFER_LEARNING_TEST_CASES,
 )
-from tests.performance_tests.test_logic.testcases_classes import TestCase
+from tests.performance_tests.utils import (
+    ResultPersistenceInterface,
+    S3ExperimentResultPersistence,
+    TestCase,
+)
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("BAYBE_TEST_ENV") != "PERFORMANCETEST",
@@ -23,7 +27,7 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def all_test_cases_uniquely_identifiable(test_case_list: List[TestCase]) -> bool:
+def all_test_cases_uniquely_identifiable(test_case_list: Sequence[TestCase]) -> bool:
     """Check if all test cases have unique names.
 
     Returns:
@@ -33,14 +37,14 @@ def all_test_cases_uniquely_identifiable(test_case_list: List[TestCase]) -> bool
     return len(test_case_list) == len(unique_uuids)
 
 
-def combine_simulations() -> List[TestCase]:
+def combine_simulations() -> Sequence[TestCase]:
     """Combines different sets of test cases into a single list.
 
     Returns:
         List[TestCase]: A list containing all the test cases from SCENARIO_TEST_CASES,
-        SIMULATE_EXPERIMENT_TEST_CASES, and TRANSPHER_LEARNING_TEST_CASES.
+        SIMULATE_EXPERIMENT_TEST_CASES, and TRANSFER_LEARNING_TEST_CASES.
     """
-    testcase_list: List[TestCase] = (
+    testcase_list: Sequence[TestCase] = (
         SCENARIO_TEST_CASES
         + SIMULATE_EXPERIMENT_TEST_CASES
         + TRANSFER_LEARNING_TEST_CASES
@@ -56,5 +60,6 @@ def combine_simulations() -> List[TestCase]:
 @pytest.mark.parametrize("scenario", combine_simulations())
 def test_performance_test(scenario: TestCase) -> None:
     """Run the performance test for the given scenario."""
-    print(scenario.execute_testcase())
+    result_data_handler: ResultPersistenceInterface = S3ExperimentResultPersistence()
+    simulation_results = scenario.execute_testcase()
     assert False  # This is a placeholder for the actual test
