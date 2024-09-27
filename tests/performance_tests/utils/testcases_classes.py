@@ -36,7 +36,7 @@ class TestMetaDataAndResult:
     def to_dict(self) -> dict[str, Any]:
         """Convert the object to a dictionary without the dataframe result."""
         removed_none_metadata = {
-            key: value for key, value in self.metadata.items() if value is not None
+            key: str(value) for key, value in self.metadata.items() if value is not None
         }
         removed_none_metadata["unique_id"] = str(self.unique_id)
         removed_none_metadata["title"] = self.title
