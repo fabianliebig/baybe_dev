@@ -9,6 +9,7 @@ import os
 from datetime import datetime
 from typing import Sequence
 
+import boto3
 import pytest
 
 from tests.performance_tests.test_cases import (
@@ -66,6 +67,10 @@ def test_time_stamp() -> datetime:
 @pytest.mark.parametrize("scenario", combine_simulations())
 def test_performance_test(scenario: TestCase, test_time_stamp: datetime) -> None:
     """Run the performance test for the given scenario."""
+
+    client = boto3.client("s3")
+    response = client.list_buckets()
+    print("S3 Buckets:", response["Buckets"])
     result_data_handler: ResultPersistenceInterface = S3ExperimentResultPersistence(
         date_time=test_time_stamp
     )
