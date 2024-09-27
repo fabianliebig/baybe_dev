@@ -4,7 +4,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -38,6 +38,8 @@ jobs:
       steps:
         - uses: actions/checkout@v4
         - uses: actions/setup-python@v5
+          env:
+            BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME: ${{ secret.TEST_RESULT_S3_BUCKET }}
           id: setup-python
           with:
             python-version: '3.10'
