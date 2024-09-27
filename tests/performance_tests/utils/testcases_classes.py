@@ -38,11 +38,9 @@ class TestMetaDataAndResult:
         removed_none_metadata = {
             key: value for key, value in self.metadata.items() if value is not None
         }
-        return {
-            "unique_id": str(self.unique_id),
-            "title": self.title,
-            "metadata": removed_none_metadata,
-        }
+        removed_none_metadata["unique_id"] = str(self.unique_id)
+        removed_none_metadata["title"] = self.title
+        return removed_none_metadata
 
     def to_json(self) -> str:
         """Convert the object to a JSON string."""
