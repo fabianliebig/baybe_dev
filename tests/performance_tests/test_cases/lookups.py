@@ -8,15 +8,16 @@ Attributes:
 
 """
 
+from pathlib import Path
 from typing import Callable, Dict, Union
 
 from pandas import DataFrame, read_csv
 
+PATH_PREFIX = Path("tests//performance_tests//test_cases//lookup_data//")
+
 LOOKUP_STRUCTURE: Dict[str, Union[DataFrame, Callable]] = {
-    "aryl_halides": read_csv(
-        "tests//performance_tests//testcases/lookup_data//aryl_halides.csv"
-    ),
+    "aryl_halides": read_csv(PATH_PREFIX.joinpath("aryl_halides.csv").resolve()),
     "direct_arylation": read_csv(
-        "tests//performance_tests//testcases/lookup_data//direct_arylation.csv"
+        PATH_PREFIX.joinpath("direct_arylation.csv").resolve()
     ),
 }
