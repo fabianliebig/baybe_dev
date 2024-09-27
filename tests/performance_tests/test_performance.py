@@ -6,6 +6,7 @@ compared between different versions of the package.
 """
 
 import os
+from datetime import datetime
 from typing import Sequence
 
 import pytest
@@ -57,10 +58,17 @@ def combine_simulations() -> Sequence[TestCase]:
     return testcase_list
 
 
+@pytest.fixture(scope="module")
+def test_time_stamp() -> datetime:
+    return datetime.now()
+
+
 @pytest.mark.parametrize("scenario", combine_simulations())
-def test_performance_test(scenario: TestCase) -> None:
+def test_performance_test(scenario: TestCase, test_time_stamp: datetime) -> None:
     """Run the performance test for the given scenario."""
-    result_data_handler: ResultPersistenceInterface = S3ExperimentResultPersistence()
+    result_data_handler: ResultPersistenceInterface = S3ExperimentResultPersistence(
+        date_time=test_time_stamp
+    )
     simulation_results = scenario.execute_testcase()
     result_data_handler.persist_new_result(scenario.unique_id, simulation_results)
     print(result_data_handler.load_compare_result(scenario.unique_id))

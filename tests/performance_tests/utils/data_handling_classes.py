@@ -9,19 +9,36 @@ import boto3
 import boto3.session
 from attr import define, field
 from pandas import DataFrame
-
+from baybe import __version__
 from tests.performance_tests.utils.testcases_classes import TestMetaDataAndResult
 
 
+@define
 class ResultPersistenceInterface(ABC):
     """Interface for classes that persist experiment results."""
 
-    baybe_version: str
-    """The version of the Baybe library."""
-    branch: str
-    """The branch of the Baybe library from which the workflow was started."""
     date_time: datetime
-    commit_hash: str
+    baybe_version: str = field()
+    """The version of the Baybe library."""
+    branch: str = field()
+    """The branch of the Baybe library from which the workflow was started."""
+    commit_hash: str = field()
+
+    @baybe_version.default
+    def _default_baybe_version(self) -> str:
+        return __version__
+
+    @branch.default
+    def _default_branch(self) -> str:
+        if "GITHUB_REF_NAME" not in os.environ:
+            raise ValueError("The environment variable GITHUB_REF_NAME is not set.")
+        return os.environ["GITHUB_REF_NAME"]
+
+    @commit_hash.default
+    def _default_commit_hash(self) -> str:
+        if "GITHUB_SHA" not in os.environ:
+            raise ValueError("The environment variable GITHUB_SHA is not set.")
+        return os.environ["GITHUB_SHA"]
 
     @abstractmethod
     def persist_new_result(
