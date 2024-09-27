@@ -25,7 +25,7 @@ jobs:
       runs-on: self-hosted
       name: Core Tests 3.10
       env:
-        BUCKET_NAME: ${{ secrets.TEST_RESULT_S3_BUCKET }}
+        BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME: ${{ secrets.TEST_RESULT_S3_BUCKET }}
       steps:
         - uses: actions/checkout@v4
         - uses: actions/setup-python@v5
@@ -35,5 +35,4 @@ jobs:
         - name: Run performance test
           run: |
             pip install tox-uv
-            export BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME=$BUCKET_NAME
             tox -e performancetest-py310
