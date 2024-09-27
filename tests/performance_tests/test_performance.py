@@ -62,4 +62,6 @@ def test_performance_test(scenario: TestCase) -> None:
     """Run the performance test for the given scenario."""
     result_data_handler: ResultPersistenceInterface = S3ExperimentResultPersistence()
     simulation_results = scenario.execute_testcase()
+    result_data_handler.persist_new_result(scenario.unique_id, simulation_results)
+    print(result_data_handler.load_compare_result(scenario.unique_id))
     assert False  # This is a placeholder for the actual test
