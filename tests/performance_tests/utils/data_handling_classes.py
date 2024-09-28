@@ -30,7 +30,7 @@ class ResultPersistenceInterface(ABC):
 
     @branch.default
     def _default_branch(self) -> str:
-        if "GITHUB_REF_NAME" not in os.environ:
+        if "GITHUB_REF_NAME" not in os.environ and os.environ:
             raise ValueError("The environment variable GITHUB_REF_NAME is not set.")
         return os.environ["GITHUB_REF_NAME"]
 
@@ -80,8 +80,8 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         )
         if ENVIRONMENT_NOT_SET:
             raise ValueError(
-                "The environment variable"
-                "BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME is not set."
+                "The environment variable " \
+                "BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME is not set. " \
                 "A bucket name must be provided."
             )
         return os.environ["BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME"]
@@ -96,8 +96,8 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             result (TestMetaDataAndResult): The result to be persisted.
         """
         client = self._object_session.client("s3")
-        bucket_path = f"{experiment_id}/"
-        f"{self.branch}/{self.baybe_version}/{self.date_time}/{self.commit_hash}/"
+        bucket_path = f"{experiment_id}/" \
+        f"{self.branch}/{self.baybe_version}/{self.date_time}/{self.commit_hash}"
 
         client.put_object(
             Bucket=self.bucket_name,

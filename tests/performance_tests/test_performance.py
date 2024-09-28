@@ -53,7 +53,7 @@ def combine_simulations() -> Sequence[TestCase]:
     )
     if not all_test_cases_uniquely_identifiable(testcase_list):
         raise ValueError(
-            "All test cases must have unique "
+            "All test cases must have unique " \
             "names to compare their results over time."
         )
     return testcase_list
@@ -67,10 +67,6 @@ def test_time_stamp() -> datetime:
 @pytest.mark.parametrize("scenario", combine_simulations())
 def test_performance_test(scenario: TestCase, test_time_stamp: datetime) -> None:
     """Run the performance test for the given scenario."""
-
-    client = boto3.client("s3")
-    response = client.list_buckets()
-    print("S3 Buckets:", response["Buckets"])
     result_data_handler: ResultPersistenceInterface = S3ExperimentResultPersistence(
         date_time=test_time_stamp
     )

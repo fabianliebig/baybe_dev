@@ -21,7 +21,7 @@ from tests.performance_tests.utils import (
 SCENARIO_TEST_CASES: List[SimulateScenariosTestCase] = [
     SimulateScenariosTestCase(
         unique_id=UUID("abefe05d-b6ca-45cf-a9fa-1dce9144eadc"),
-        title="Direct Arylation Scenario Simulation maximum"
+        title="Direct Arylation Scenario Simulation maximum" \
         " yield with Mordred and RDKit",
         scenarios={
             "Mordred": Campaign(
