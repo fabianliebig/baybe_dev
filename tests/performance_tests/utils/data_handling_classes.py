@@ -107,7 +107,6 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             ContentType="text/csv",
             Metadata=result.to_s3_dict(),
         )
-        print(f"TEST: {result.to_s3_dict()}")
 
     def load_compare_result(self, experiment_id: UUID) -> DataFrame:
         """Load the oldest stable result for a given experiment ID.
@@ -126,7 +125,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         client = self._object_session.client("s3")
         paginator = client.get_paginator("list_objects_v2")
         page_iterator = paginator.paginate(
-            Bucket=self.bucket_name, Prefix=f"{experiment_id}/main/"
+            Bucket=self.bucket_name, Prefix=f"{experiment_id}"
         )
         sort_after_key_date = "Contents | sort_by(@, &LastModified) | [0]"
         oldest_object = page_iterator.search(sort_after_key_date)
