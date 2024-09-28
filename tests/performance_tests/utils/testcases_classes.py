@@ -33,9 +33,9 @@ class TestMetaDataAndResult:
     title: str
     metadata: dict[str, Any]
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_s3_dict(self) -> dict[str, str]:
         """Convert the object to a dictionary without the dataframe result."""
-        removed_none_metadata = {
+        removed_none_metadata: dict[str, str] = {
             key: str(value) for key, value in self.metadata.items() if value is not None
         }
         removed_none_metadata["unique_id"] = str(self.unique_id)
@@ -44,7 +44,7 @@ class TestMetaDataAndResult:
 
     def to_json(self) -> str:
         """Convert the object to a JSON string."""
-        return json.dumps(self.to_dict())
+        return json.dumps(self.to_s3_dict())
 
 
 @define
