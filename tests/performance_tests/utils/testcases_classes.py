@@ -33,11 +33,28 @@ class TestMetaDataAndResult:
     title: str
     metadata: dict[str, Any]
 
+    def _sanitize_metadata(self) -> dict[str, str]:
+        """Sanitize metadata dictionary.
+
+        Remove all None values, convert all values to strings and replace illegal
+        characters in the keys and values.
+        """
+        valid_chars = set(
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&'*+-.^_`~|"
+        )
+
+        return_dict = {}
+        for key, value in self.metadata.items():
+            if value is not None:
+                sanitized_key = "".join(
+                    char if char in valid_chars else "_" for char in key
+                )
+                return_dict[sanitized_key] = str(value)
+        return return_dict
+
     def to_s3_dict(self) -> dict[str, str]:
         """Convert the object to a dictionary without the dataframe result."""
-        removed_none_metadata: dict[str, str] = {
-            key: str(value) for key, value in self.metadata.items() if value is not None
-        }
+        removed_none_metadata: dict[str, str] = self._sanitize_metadata()
         removed_none_metadata["unique_id"] = str(self.unique_id)
         removed_none_metadata["title"] = self.title
         return removed_none_metadata
