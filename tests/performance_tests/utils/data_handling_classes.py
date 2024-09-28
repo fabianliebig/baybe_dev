@@ -128,10 +128,8 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             Bucket=self.bucket_name, Prefix=f"{experiment_id}/"
         )
         sort_after_key_date = "Contents | sort_by(@, &LastModified) | [0]"
-        oldest_object = page_iterator.search(sort_after_key_date)
-        for key_data in oldest_object:
-            print(key_data)
-        if oldest_object:
+        oldest_object = next(page_iterator.search(sort_after_key_date), None)
+        if not oldest_object:
             raise ValueError("No result found for the given experiment ID.")
 
         key = oldest_object["Key"]
