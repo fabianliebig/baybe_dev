@@ -118,6 +118,17 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         )
 
     def _get_oldest_s3_object(self, iterator: PageIterator) -> dict:
+        """Retrieves the oldest S3 object from the given iterator.
+
+        Args:
+            iterator (PageIterator): An iterator that provides access to S3 objects.
+
+        Returns:
+            dict: The oldest S3 object as a dictionary.
+
+        Raises:
+            ValueError: If no result is found for the given experiment ID.
+        """
         oldest_object = None
         for page in iterator:
             for content in page["Contents"]:
@@ -147,12 +158,12 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         client = self._object_session.client("s3")
         paginator = client.get_paginator("list_objects_v2")
         page_iterator = paginator.paginate(
-            Bucket=self.bucket_name, Prefix=f"{experiment_id}/"
+            Bucket=self.bucket_name, Prefix=f"{experiment_id}/main"
         )
         oldest_object = self._get_oldest_s3_object(page_iterator)
 
         key = oldest_object["Key"]
         response = client.get_object(Bucket=self.bucket_name, Key=key)
         data = response["Body"].read()
-        csv_data = io.StringIO(data.decode('utf-8'))
+        csv_data = io.StringIO(data.decode("utf-8"))
         return pandas.read_csv(csv_data)
