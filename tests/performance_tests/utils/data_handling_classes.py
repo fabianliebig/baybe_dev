@@ -8,7 +8,9 @@ from uuid import UUID
 import boto3
 import boto3.session
 from attr import define, field
+from botocore.paginate import PageIterator
 from pandas import DataFrame
+
 from baybe import __version__
 from tests.performance_tests.utils.testcases_classes import TestMetaDataAndResult
 
@@ -81,8 +83,8 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         )
         if ENVIRONMENT_NOT_SET:
             raise ValueError(
-                "The environment variable " \
-                "BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME is not set. " \
+                "The environment variable "
+                "BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME is not set. "
                 "A bucket name must be provided."
             )
         return os.environ["BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME"]
@@ -97,12 +99,14 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             result (TestMetaDataAndResult): The result to be persisted.
         """
         client = self._object_session.client("s3")
-        bucket_path = f"{experiment_id}/" \
-        f"{self.branch}/{self.baybe_version}/{self.date_time.isoformat()}/{self.commit_hash}"
+        bucket_path = (
+            f"{experiment_id}/"
+            f"{self.branch}/{self.baybe_version}/{self.date_time.isoformat()}/{self.commit_hash}"
+        )
 
         metadata = result.to_s3_dict()
         metadata["date_time"] = self.date_time.isoformat()
-        
+
         client.put_object(
             Bucket=self.bucket_name,
             Key=f"{bucket_path}/result.csv",
@@ -110,6 +114,19 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             ContentType="text/csv",
             Metadata=metadata,
         )
+
+    def _get_oldest_s3_object(self, iterator: PageIterator) -> dict:
+        oldest_object = None
+        for page in iterator:
+            for content in page["Contents"]:
+                if not oldest_object:
+                    oldest_object = content
+                elif content["LastModified"] < oldest_object["LastModified"]:
+                    oldest_object = content
+
+        if not oldest_object:
+            raise ValueError("No result found for the given experiment ID.")
+        return oldest_object
 
     def load_compare_result(self, experiment_id: UUID) -> DataFrame:
         """Load the oldest stable result for a given experiment ID.
@@ -130,10 +147,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         page_iterator = paginator.paginate(
             Bucket=self.bucket_name, Prefix=f"{experiment_id}/"
         )
-        sort_after_key_date = "Contents | sort_by(@, &Metadata.date_time) | [0]"
-        oldest_object = next(page_iterator.search(sort_after_key_date), None)
-        if not oldest_object:
-            raise ValueError("No result found for the given experiment ID.")
+        oldest_object = self._get_oldest_s3_object(page_iterator)
 
         key = oldest_object["Key"]
         response = client.get_object(Bucket=self.bucket_name, Key=key)
