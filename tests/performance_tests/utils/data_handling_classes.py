@@ -32,7 +32,8 @@ class ResultPersistenceInterface(ABC):
     def _default_branch(self) -> str:
         if "GITHUB_REF_NAME" not in os.environ and os.environ:
             raise ValueError("The environment variable GITHUB_REF_NAME is not set.")
-        return os.environ["GITHUB_REF_NAME"]
+        path_usable_branch = os.environ["GITHUB_REF_NAME"].replace("/", "-")
+        return path_usable_branch
 
     @commit_hash.default
     def _default_commit_hash(self) -> str:
@@ -104,8 +105,9 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             Key=f"{bucket_path}/result.csv",
             Body=result.result.to_csv(),
             ContentType="text/csv",
-            Metadata=result.to_dict(),
+            Metadata=result.to_s3_dict(),
         )
+        print(f"TEST: {result.to_s3_dict()}")
 
     def load_compare_result(self, experiment_id: UUID) -> DataFrame:
         """Load the oldest stable result for a given experiment ID.
