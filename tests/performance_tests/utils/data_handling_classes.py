@@ -1,5 +1,6 @@
 """Classes for persisting and loading experiment results."""
 
+import io
 import os
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -7,6 +8,7 @@ from uuid import UUID
 
 import boto3
 import boto3.session
+import pandas
 from attr import define, field
 from botocore.paginate import PageIterator
 from pandas import DataFrame
@@ -152,4 +154,5 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         key = oldest_object["Key"]
         response = client.get_object(Bucket=self.bucket_name, Key=key)
         data = response["Body"].read()
-        return DataFrame(data)
+        csv_data = io.StringIO(data.decode('utf-8'))
+        return pandas.read_csv(csv_data)
