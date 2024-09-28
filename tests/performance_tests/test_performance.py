@@ -9,7 +9,6 @@ import os
 from datetime import datetime
 from typing import Sequence
 
-import boto3
 import pytest
 
 from tests.performance_tests.test_cases import (
@@ -72,5 +71,4 @@ def test_performance_test(scenario: TestCase, test_time_stamp: datetime) -> None
     )
     simulation_results = scenario.execute_testcase()
     result_data_handler.persist_new_result(scenario.unique_id, simulation_results)
-    print(result_data_handler.load_compare_result(scenario.unique_id))
     assert False  # This is a placeholder for the actual test

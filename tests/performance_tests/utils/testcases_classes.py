@@ -1,10 +1,10 @@
 """Data classes that are used to define the test cases for the performance tests.
 
 This file contains helper classes which contain all the necessary information to run a
-testcase. One interface is defined to execute the in a uniform way and profide the
+testcase. One interface is defined to execute the in a uniform way and provide the
 possibility to evaluate the results of the testcase not only by its return value but
 also by other non functional properties like runtime or memory consumption in
-furture implementations.
+future implementations.
 """
 
 import json

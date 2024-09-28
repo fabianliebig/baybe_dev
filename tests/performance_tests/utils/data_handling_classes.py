@@ -58,14 +58,19 @@ class ResultPersistenceInterface(ABC):
         pass
 
     @abstractmethod
-    def load_compare_result(self, experiment_id: UUID) -> TestMetaDataAndResult:
-        """Load the last result for a given experiment ID.
+    def load_compare_result(self, experiment_id: UUID) -> DataFrame:
+        """Load the oldest stable result for a given experiment ID.
+
+        Loads the oldest result from an experiment that is created from the main branch
+        of the Baybe library. This is done to compare the performance of the library
+        over a longer time period and to ensure that the results don't just a bit from
+        version to version which would be not noticeable in the short term.
 
         Parameters:
             experiment_id (UUID): The ID of the experiment.
 
         Returns:
-            TestMetaDataAndResult: The last result for the given experiment ID.
+            Dataframe: The last result for the given experiment ID.
         """
         pass
 
@@ -153,7 +158,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             experiment_id (UUID): The ID of the experiment.
 
         Returns:
-            TestMetaDataAndResult: The last result for the given experiment ID.
+            Dataframe: The last result for the given experiment ID.
         """
         client = self._object_session.client("s3")
         paginator = client.get_paginator("list_objects_v2")
