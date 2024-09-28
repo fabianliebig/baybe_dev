@@ -125,7 +125,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         client = self._object_session.client("s3")
         paginator = client.get_paginator("list_objects_v2")
         page_iterator = paginator.paginate(
-            Bucket=self.bucket_name, Prefix=f"{experiment_id}"
+            Bucket=self.bucket_name, Prefix=f"{experiment_id}/"
         )
         sort_after_key_date = "Contents | sort_by(@, &LastModified) | [0]"
         oldest_object = page_iterator.search(sort_after_key_date)
