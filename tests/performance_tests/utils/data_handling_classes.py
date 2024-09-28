@@ -98,14 +98,17 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         """
         client = self._object_session.client("s3")
         bucket_path = f"{experiment_id}/" \
-        f"{self.branch}/{self.baybe_version}/{self.date_time}/{self.commit_hash}"
+        f"{self.branch}/{self.baybe_version}/{self.date_time.isoformat()}/{self.commit_hash}"
 
+        metadata = result.to_s3_dict()
+        metadata["date_time"] = self.date_time.isoformat()
+        
         client.put_object(
             Bucket=self.bucket_name,
             Key=f"{bucket_path}/result.csv",
             Body=result.result.to_csv(),
             ContentType="text/csv",
-            Metadata=result.to_s3_dict(),
+            Metadata=metadata,
         )
 
     def load_compare_result(self, experiment_id: UUID) -> DataFrame:
@@ -127,7 +130,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         page_iterator = paginator.paginate(
             Bucket=self.bucket_name, Prefix=f"{experiment_id}/"
         )
-        sort_after_key_date = "Contents | sort_by(@, &LastModified) | [0]"
+        sort_after_key_date = "Contents | sort_by(@, &Metadata.date_time) | [0]"
         oldest_object = next(page_iterator.search(sort_after_key_date), None)
         if not oldest_object:
             raise ValueError("No result found for the given experiment ID.")
