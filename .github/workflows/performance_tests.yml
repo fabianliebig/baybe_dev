@@ -26,8 +26,6 @@ jobs:
       name: Core Tests 3.10
       env:
         BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME: ${{ secrets.TEST_RESULT_S3_BUCKET }}
-        GITHUB_REF_NAME: ${{ github.ref_name }}
-        GITHUB_SHA: ${{ github.sha }}
       steps:
         - uses: actions/checkout@v4
         - uses: actions/setup-python@v5
