@@ -99,7 +99,7 @@ def time_stamp_test_execution(
 
 
 @pytest.fixture(scope="function")
-def result_data_handler(test_time_stamp: datetime) -> ResultPersistenceInterface:
+def result_data_handler(time_stamp_test_execution: datetime) -> ResultPersistenceInterface:
     """Returns an instance of ResultPersistenceInterface for storing experiment results.
 
     This fixture is used to store the results of the performance tests in a persistent
@@ -113,7 +113,7 @@ def result_data_handler(test_time_stamp: datetime) -> ResultPersistenceInterface
         ResultPersistenceInterface: An instance of ResultPersistenceInterface.
 
     """
-    return S3ExperimentResultPersistence(test_time_stamp)
+    return S3ExperimentResultPersistence(time_stamp_test_execution)
 
 
 @pytest.mark.parametrize("scenario", combine_simulations())
