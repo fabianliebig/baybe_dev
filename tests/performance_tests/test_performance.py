@@ -60,11 +60,30 @@ def combine_simulations() -> Sequence[TestCase]:
 
 @pytest.fixture(scope="module")
 def test_time_stamp() -> datetime:
+    """Returns the current timestamp.
+
+    This timestamp has  a modular scope so that every test case uses the same timestamp.
+    That is important to ensure that one execution of all test cases is stored under the same key.
+
+    :return: The current timestamp.
+    """
     return datetime.now()
 
 
 @pytest.fixture(scope="function")
 def result_data_handler(test_time_stamp: datetime) -> ResultPersistenceInterface:
+    """Returns an instance of ResultPersistenceInterface for storing experiment results.
+
+    This fixture is used to store the results of the performance tests in a persistent
+    way with a function scope to ensure that all test cases can run independently.
+
+    Parameters:
+        test_time_stamp (datetime): The timestamp of the test.
+
+    Returns:
+        ResultPersistenceInterface: An instance of ResultPersistenceInterface.
+
+    """
     return S3ExperimentResultPersistence(test_time_stamp)
 
 
