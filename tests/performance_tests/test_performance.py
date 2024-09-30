@@ -99,7 +99,9 @@ def time_stamp_test_execution(
 
 
 @pytest.fixture(scope="function")
-def result_data_handler(time_stamp_test_execution: datetime) -> ResultPersistenceInterface:
+def result_data_handler(
+    time_stamp_test_execution: datetime,
+) -> ResultPersistenceInterface:
     """Returns an instance of ResultPersistenceInterface for storing experiment results.
 
     This fixture is used to store the results of the performance tests in a persistent
