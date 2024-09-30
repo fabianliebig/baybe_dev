@@ -58,7 +58,7 @@ def combine_simulations() -> Sequence[TestCase]:
     return testcase_list
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def test_time_stamp() -> datetime:
     """Returns the current timestamp.
 

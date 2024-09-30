@@ -21,29 +21,29 @@ from tests.performance_tests.utils.testcases_classes import TestMetaDataAndResul
 class ResultPersistenceInterface(ABC):
     """Interface for classes that persist experiment results."""
 
-    date_time: datetime
-    baybe_version: str = field()
-    """The version of the Baybe library."""
-    branch: str = field()
-    """The branch of the Baybe library from which the workflow was started."""
-    commit_hash: str = field()
-
-    @baybe_version.default
-    def _default_baybe_version(self) -> str:
+    @staticmethod
+    def _default_baybe_version() -> str:
         return __version__
 
-    @branch.default
-    def _default_branch(self) -> str:
+    @staticmethod
+    def _default_branch() -> str:
         if "GITHUB_REF_NAME" not in os.environ and os.environ:
             raise ValueError("The environment variable GITHUB_REF_NAME is not set.")
         path_usable_branch = os.environ["GITHUB_REF_NAME"].replace("/", "-")
         return path_usable_branch
 
-    @commit_hash.default
-    def _default_commit_hash(self) -> str:
+    @staticmethod
+    def _default_commit_hash() -> str:
         if "GITHUB_SHA" not in os.environ:
             raise ValueError("The environment variable GITHUB_SHA is not set.")
         return os.environ["GITHUB_SHA"]
+
+    date_time: datetime
+    baybe_version: str = field(default=_default_baybe_version())
+    """The version of the Baybe library."""
+    branch: str = field(default=_default_branch())
+    """The branch of the Baybe library from which the workflow was started."""
+    commit_hash: str = field(default=_default_commit_hash())
 
     @abstractmethod
     def persist_new_result(
@@ -79,12 +79,8 @@ class ResultPersistenceInterface(ABC):
 class S3ExperimentResultPersistence(ResultPersistenceInterface):
     """Class for persisting experiment results in an S3 bucket."""
 
-    bucket_name: str = field()
-    """The name of the S3 bucket where the results are stored."""
-    _object_session = boto3.session.Session()
-
-    @bucket_name.default
-    def _default_bucket_name(self) -> str:
+    @staticmethod
+    def _default_bucket_name() -> str:
         ENVIRONMENT_NOT_SET = (
             "BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME" not in os.environ
         )
@@ -95,6 +91,10 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
                 "A bucket name must be provided."
             )
         return os.environ["BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME"]
+
+    bucket_name: str = field(default=_default_bucket_name())
+    """The name of the S3 bucket where the results are stored."""
+    _object_session = boto3.session.Session()
 
     def persist_new_result(
         self, experiment_id: UUID, result: TestMetaDataAndResult
