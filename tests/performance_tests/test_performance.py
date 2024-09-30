@@ -63,7 +63,8 @@ def test_time_stamp() -> datetime:
     """Returns the current timestamp.
 
     This timestamp has  a modular scope so that every test case uses the same timestamp.
-    That is important to ensure that one execution of all test cases is stored under the same key.
+    That is important to ensure that one execution of all test cases is stored under the
+    same key.
 
     :return: The current timestamp.
     """
