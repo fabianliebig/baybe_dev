@@ -10,6 +10,8 @@ from datetime import datetime
 from typing import Sequence
 
 import pytest
+from filelock import FileLock
+from pytest import TempPathFactory
 
 from tests.performance_tests.test_cases import (
     SCENARIO_TEST_CASES,
@@ -59,16 +61,41 @@ def combine_simulations() -> Sequence[TestCase]:
 
 
 @pytest.fixture(scope="session")
-def test_time_stamp() -> datetime:
-    """Returns the current timestamp.
+def time_stamp_test_execution(
+    tmp_path_factory: TempPathFactory, worker_id: str
+) -> datetime:
+    """This function returns the timestamp of test execution.
 
-    This timestamp has  a modular scope so that every test case uses the same timestamp.
-    That is important to ensure that one execution of all test cases is stored under the
-    same key.
+    This function is used to ensure that the tests are running in parallel while using
+    the same timestamp for all tests. Since the worker execute just a different subset
+    of the tests which are parallelized but do run the fixture function independently,
+    the date is stored in a file and read from there. For more information see:
+    https://pytest-xdist.readthedocs.io/en/stable/how-to.html#making-session-scoped-fixtures-execute-only-once
+    Since the date becomes part of the key for persisting the results,
+    it is important that all tests use the same date.
 
-    :return: The current timestamp.
+    Args:
+        tmp_path_factory (TempPathFactory): The factory for creating temporary directories.
+        worker_id (str): The ID of the worker.
+
+    Returns:
+        datetime: The timestamp of the test execution.
     """
-    return datetime.now()
+    NOT_RUNNING_IN_PARALLEL = worker_id == "master"
+    if NOT_RUNNING_IN_PARALLEL:
+        return datetime.now()
+
+    root_tmp_dir = tmp_path_factory.getbasetemp().parent
+
+    fn = root_tmp_dir / "date.txt"
+    with FileLock(str(fn) + ".lock"):
+        if not fn.is_file():
+            date = datetime.now()
+            fn.write_text(date.isoformat())
+            return date
+
+        saved_date: str = fn.read_text()
+        return datetime.fromisoformat(saved_date)
 
 
 @pytest.fixture(scope="function")
@@ -76,7 +103,8 @@ def result_data_handler(test_time_stamp: datetime) -> ResultPersistenceInterface
     """Returns an instance of ResultPersistenceInterface for storing experiment results.
 
     This fixture is used to store the results of the performance tests in a persistent
-    way with a function scope to ensure that all test cases can run independently.
+    way with a function scope to ensure that all test cases can run independently
+    since basic boto3 is not thread safe but creating a boto3 client session is.
 
     Parameters:
         test_time_stamp (datetime): The timestamp of the test.
