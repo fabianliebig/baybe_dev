@@ -137,9 +137,11 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         oldest_object = None
         for page in iterator:
             for content in page["Contents"]:
-                if not oldest_object:
-                    oldest_object = content
-                elif content["LastModified"] < oldest_object["LastModified"]:
+                OBSERVED_CONTENT_IS_OLDER = (
+                    oldest_object is not None
+                    and content["LastModified"] < oldest_object["LastModified"]
+                )
+                if not oldest_object or OBSERVED_CONTENT_IS_OLDER:
                     oldest_object = content
 
         if not oldest_object:
