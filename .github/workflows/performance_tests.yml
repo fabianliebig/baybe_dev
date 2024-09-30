@@ -28,6 +28,8 @@ jobs:
         BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME: ${{ secrets.TEST_RESULT_S3_BUCKET }}
       steps:
         - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
         - uses: actions/setup-python@v5
           id: setup-python
           with:
