@@ -4,7 +4,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -12,38 +12,29 @@ permissions:
 
 jobs:
     add-runner:
-        name: Add one JIT Runner
-        runs-on: ubuntu-22.04
-        steps:
-        - name: Configure AWS credentials
-          uses: aws-actions/configure-aws-credentials@v4
-          with:
-            role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-            role-session-name: Github_Add_Runner
-            aws-region: eu-central-1
-
-        - name: Login to Amazon ECR
-          id: login-ecr
-          uses: aws-actions/amazon-ecr-login@v2
-
-        - name: Execute Lambda function
-          run: |
-            aws lambda invoke --function-name register_and_create_runner_container --cli-binary-format raw-in-base64-out --payload '{}' response.json
-            cat response.json
+      uses: ./.github/workflows/runner_attach_workflow.yml
+      with:
+        RunnerCount: 1
+        RunnerComputeType: "M"
+      secrets:
+        GitHubToken: ${{ secrets.RUNNER_ATTACH_API_KEY }}
+        AWSRoleToAssume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
     coretest:
       needs: add-runner
       runs-on: self-hosted
       name: Core Tests 3.10
+      env:
+        BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME: ${{ secrets.TEST_RESULT_S3_BUCKET }}
       steps:
         - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
         - uses: actions/setup-python@v5
-          env:
-            BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME: ${{ secret.TEST_RESULT_S3_BUCKET }}
           id: setup-python
           with:
             python-version: '3.10'
-        - name: Run core tests
+        - name: Run performance test
           run: |
             pip install tox-uv
-            tox -e coretest-py310
+            tox -e performancetest-py310
