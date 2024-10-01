@@ -4,7 +4,7 @@ import io
 import os
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Dict, Set
+from typing import Dict, List
 from uuid import UUID
 
 import boto3
@@ -13,7 +13,7 @@ import pandas
 from attr import define, field
 from botocore.paginate import PageIterator
 from pandas import DataFrame
-from sortedcontainers import SortedList, SortedSet
+from sortedcontainers import SortedDict, SortedList
 
 from baybe import __version__
 from tests.performance_tests.utils.testcases_classes import TestMetaDataAndResult
@@ -187,11 +187,14 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         page_iterator = paginator.paginate(
             Bucket=self.bucket_name, Prefix=f"{experiment_id}/main"
         )
-        map_of_versions: Dict[str, Set[str]] = self._extract_baybe_versions(
+        map_of_versions: Dict[str, List[str]] = self._extract_baybe_versions(
             page_iterator
         )
         versions = list(map_of_versions.keys())
-        current_index = versions.index(self.baybe_version)
+        compare_version = self._sanitize_baybe_version(self.baybe_version)
+        if compare_version not in versions:
+            return versions[-1][0]
+        current_index = versions.index(compare_version)
         VERSION_HAS_NO_COMPARATIVE = current_index <= 0
         if VERSION_HAS_NO_COMPARATIVE:
             raise ValueError("The current version has no previous version to compare.")
@@ -199,26 +202,41 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
 
     def _extract_baybe_versions(
         self, page_iterator: PageIterator
-    ) -> Dict[str, Set[str]]:
+    ) -> Dict[str, List[str]]:
         """Extracts the Baybe versions from the given page iterator.
 
         Args:
             page_iterator (PageIterator): An iterator that provides pages.
 
         Returns:
-            Dict[str, Set[str]]: A dictionary mapping Baybe versions to a set
+            Dict[str, List[str]]: A dictionary mapping Baybe versions to a set
             of corresponding keys.
         """
-        map_of_versions = SortedList()
+        map_of_versions = SortedDict()
         for page in page_iterator:
             if "Contents" in page:
                 for key in page["Contents"]:
-                    key_string = key["Key"]
-                    baybe_version = key_string.split("/")[2]
+                    key_str = key["Key"]
+                    baybe_version = key_str.split("/")[2]
+                    san_baybe_version = self._sanitize_baybe_version(baybe_version)
                     if baybe_version not in map_of_versions:
-                        map_of_versions[baybe_version] = SortedSet()
-                    map_of_versions[baybe_version].append(key_string)
+                        map_of_versions[san_baybe_version] = SortedList()
+                    map_of_versions[san_baybe_version].add(key_str)
         return map_of_versions
+
+    def _sanitize_baybe_version(self, baybe_version: str) -> str:
+        """Sanitizes the Baybe version by removing any post-release version information.
+
+        Parameters:
+        - baybe_version (str): The Baybe version to be sanitized.
+
+        Returns:
+        - str: The sanitized Baybe version.
+        """
+        POST_RELEASE_VERSION = len(baybe_version.split('.')) > 3
+        if POST_RELEASE_VERSION:
+            baybe_version = '.'.join(baybe_version.split('.')[:3])
+        return baybe_version
 
     def _get_newest_dataset_from_last_release(self, experiment_id: UUID) -> DataFrame:
         """Retrieves the newest dataset from the release just before the current one.
