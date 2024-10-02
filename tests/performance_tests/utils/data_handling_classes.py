@@ -16,7 +16,7 @@ from pandas import DataFrame
 from sortedcontainers import SortedDict, SortedList
 
 from baybe import __version__
-from tests.performance_tests.utils.testcases_classes import TestMetaDataAndResult
+from tests.performance_tests.utils.testcases_classes import MetaDataAndResultPerformanceTest
 
 
 @define
@@ -49,7 +49,7 @@ class ResultPersistenceInterface(ABC):
 
     @abstractmethod
     def persist_new_result(
-        self, experiment_id: UUID, result: TestMetaDataAndResult
+        self, experiment_id: UUID, result: MetaDataAndResultPerformanceTest
     ) -> None:
         """Persists a new result for the given experiment.
 
@@ -99,7 +99,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
     _object_session = boto3.session.Session()
 
     def persist_new_result(
-        self, experiment_id: UUID, result: TestMetaDataAndResult
+        self, experiment_id: UUID, result: MetaDataAndResultPerformanceTest
     ) -> None:
         """Persists a new result for the given experiment.
 

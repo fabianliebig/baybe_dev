@@ -21,7 +21,7 @@ from tests.performance_tests.test_cases import (
 from tests.performance_tests.utils import (
     ResultPersistenceInterface,
     S3ExperimentResultPersistence,
-    TestCase,
+    PerformanceTestCase,
 )
 
 pytestmark = pytest.mark.skipif(
@@ -30,7 +30,7 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def all_test_cases_uniquely_identifiable(test_case_list: Sequence[TestCase]) -> bool:
+def all_test_cases_uniquely_identifiable(test_case_list: Sequence[PerformanceTestCase]) -> bool:
     """Check if all test cases have unique names.
 
     Returns:
@@ -40,14 +40,14 @@ def all_test_cases_uniquely_identifiable(test_case_list: Sequence[TestCase]) -> 
     return len(test_case_list) == len(unique_uuids)
 
 
-def combine_simulations() -> Sequence[TestCase]:
+def combine_simulations() -> Sequence[PerformanceTestCase]:
     """Combines different sets of test cases into a single list.
 
     Returns:
         List[TestCase]: A list containing all the test cases from SCENARIO_TEST_CASES,
         SIMULATE_EXPERIMENT_TEST_CASES, and TRANSFER_LEARNING_TEST_CASES.
     """
-    testcase_list: Sequence[TestCase] = (
+    testcase_list: Sequence[PerformanceTestCase] = (
         SCENARIO_TEST_CASES
         + SIMULATE_EXPERIMENT_TEST_CASES
         + TRANSFER_LEARNING_TEST_CASES
@@ -120,7 +120,7 @@ def result_data_handler(
 
 @pytest.mark.parametrize("scenario", combine_simulations())
 def test_performance_test(
-    scenario: TestCase, result_data_handler: ResultPersistenceInterface
+    scenario: PerformanceTestCase, result_data_handler: ResultPersistenceInterface
 ) -> None:
     """Run the performance test for the given scenario."""
     simulation_results = scenario.execute_testcase()

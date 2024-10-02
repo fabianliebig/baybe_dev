@@ -11,7 +11,7 @@ import pytest
 from tests.performance_tests.utils.data_handling_classes import (
     S3ExperimentResultPersistence,
 )
-from tests.performance_tests.utils.testcases_classes import TestMetaDataAndResult
+from tests.performance_tests.utils.testcases_classes import MetaDataAndResultPerformanceTest
 
 
 @pytest.fixture
@@ -67,7 +67,7 @@ def test_sanitize_baybe_version_with_pre_and_post_release(
 
 def test_persist_new_result(s3_persistence: S3ExperimentResultPersistence):
     experiment_id = UUID("12345678123456781234567812345678")
-    result = MagicMock(spec=TestMetaDataAndResult)
+    result = MagicMock(spec=MetaDataAndResultPerformanceTest)
     result.to_s3_dict.return_value = {"key": "value"}
     result.result.to_csv.return_value = "csv_data"
 

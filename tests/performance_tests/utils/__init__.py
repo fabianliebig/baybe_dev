@@ -8,8 +8,8 @@ from tests.performance_tests.utils.testcases_classes import (
     SimulateExperimentTestCase,
     SimulateScenariosTestCase,
     SimulateTransferLearningTestCase,
-    TestCase,
-    TestMetaDataAndResult,
+    PerformanceTestCase,
+    MetaDataAndResultPerformanceTest,
 )
 
 __all__ = [
@@ -17,8 +17,8 @@ __all__ = [
     "SimulateExperimentTestCase",
     "SimulateTransferLearningTestCase",
     "SimulateScenariosTestCase",
-    "TestCase",
-    "TestMetaDataAndResult",
+    "PerformanceTestCase",
+    "MetaDataAndResultPerformanceTest",
     "ResultPersistenceInterface",
     "S3ExperimentResultPersistence",
 ]

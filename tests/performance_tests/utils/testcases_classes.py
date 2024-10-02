@@ -25,7 +25,7 @@ from baybe.simulation import (
 
 
 @define
-class TestMetaDataAndResult:
+class MetaDataAndResultPerformanceTest:
     """A class to store the metadata and the result of a test case."""
 
     result: DataFrame
@@ -65,7 +65,7 @@ class TestMetaDataAndResult:
 
 
 @define
-class TestCase(ABC):
+class PerformanceTestCase(ABC):
     """Baseinterface for performance test cases."""
 
     unique_id: UUID
@@ -76,7 +76,7 @@ class TestCase(ABC):
     """A title for the testcase which describes the purpose of the testcase."""
 
     @abstractmethod
-    def execute_testcase(self) -> TestMetaDataAndResult:
+    def execute_testcase(self) -> MetaDataAndResultPerformanceTest:
         """Run the testcase.
 
         The method actually starts the performance test and returns the result
@@ -87,7 +87,7 @@ class TestCase(ABC):
 
 
 @define
-class SimulateScenariosTestCase(TestCase):
+class SimulateScenariosTestCase(PerformanceTestCase):
     """Testcase for the simulate_scenarios function.
 
     This testcase makes use of the simulate_scenarios function more can be
@@ -106,7 +106,7 @@ class SimulateScenariosTestCase(TestCase):
     impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = "error"
     noise_percent: float | None = None
 
-    def execute_testcase(self) -> TestMetaDataAndResult:
+    def execute_testcase(self) -> MetaDataAndResultPerformanceTest:
         """Execute the simulate_scenarios testcase.
 
         See :func:`baybe.simulation.scenarios.simulate_scenarios` for more information.
@@ -123,7 +123,7 @@ class SimulateScenariosTestCase(TestCase):
             impute_mode=self.impute_mode,
             noise_percent=self.noise_percent,
         )
-        return TestMetaDataAndResult(
+        return MetaDataAndResultPerformanceTest(
             result=result,
             unique_id=self.unique_id,
             title=self.title,
@@ -140,7 +140,7 @@ class SimulateScenariosTestCase(TestCase):
 
 
 @define
-class SimulateTransferLearningTestCase(TestCase):
+class SimulateTransferLearningTestCase(PerformanceTestCase):
     """Testcase for the simulate_transfer_learning function.
 
     This testcase makes use of the simulate_transfer_learning function more can be
@@ -155,7 +155,7 @@ class SimulateTransferLearningTestCase(TestCase):
     groupby: list[str] | None = None
     n_mc_iterations: int = 1
 
-    def execute_testcase(self) -> TestMetaDataAndResult:
+    def execute_testcase(self) -> MetaDataAndResultPerformanceTest:
         """Execute the simulate_transfer_learning testcase.
 
         See :func:`baybe.simulation.transfer_learning.simulate_transfer_learning`
@@ -169,7 +169,7 @@ class SimulateTransferLearningTestCase(TestCase):
             groupby=self.groupby,
             n_mc_iterations=self.n_mc_iterations,
         )
-        return TestMetaDataAndResult(
+        return MetaDataAndResultPerformanceTest(
             result=result,
             unique_id=self.unique_id,
             title=self.title,
@@ -183,7 +183,7 @@ class SimulateTransferLearningTestCase(TestCase):
 
 
 @define
-class SimulateExperimentTestCase(TestCase):
+class SimulateExperimentTestCase(PerformanceTestCase):
     """Testcase for the simulate_experiment function.
 
     This testcase makes use of the simulate_experiment function more can be
@@ -200,7 +200,7 @@ class SimulateExperimentTestCase(TestCase):
     impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = "error"
     noise_percent: float | None = None
 
-    def execute_testcase(self) -> TestMetaDataAndResult:
+    def execute_testcase(self) -> MetaDataAndResultPerformanceTest:
         """Execute the simulate_experiment testcase.
 
         See :func:`baybe.simulation.core.simulate_experiment`
@@ -216,7 +216,7 @@ class SimulateExperimentTestCase(TestCase):
             impute_mode=self.impute_mode,
             noise_percent=self.noise_percent,
         )
-        return TestMetaDataAndResult(
+        return MetaDataAndResultPerformanceTest(
             result=result,
             unique_id=self.unique_id,
             title=self.title,
