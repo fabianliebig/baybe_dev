@@ -32,7 +32,7 @@ class MetaDataAndResultPerformanceTest:
     result: DataFrame
     unique_id: UUID
     title: str
-    execution_time: float
+    execution_time_ns: int
     metadata: dict[str, Any]
 
     def _sanitize_metadata(self) -> dict[str, str]:
@@ -59,7 +59,7 @@ class MetaDataAndResultPerformanceTest:
         removed_none_metadata: dict[str, str] = self._sanitize_metadata()
         removed_none_metadata["unique_id"] = str(self.unique_id)
         removed_none_metadata["title"] = self.title
-        removed_none_metadata["execution_time"] = str(self.execution_time)
+        removed_none_metadata["execution_time_nanosec"] = str(self.execution_time_ns)
         return removed_none_metadata
 
     def to_json(self) -> str:
@@ -116,7 +116,7 @@ class SimulateScenariosTestCase(PerformanceTestCase):
 
         See :func:`baybe.simulation.scenarios.simulate_scenarios` for more information.
         """
-        start_time = time.perf_counter()
+        start_time = time.perf_counter_ns()
         result = simulate_scenarios(
             self.scenarios,
             self.lookup,
@@ -129,7 +129,7 @@ class SimulateScenariosTestCase(PerformanceTestCase):
             impute_mode=self.impute_mode,
             noise_percent=self.noise_percent,
         )
-        end_time = time.perf_counter()
+        end_time = time.perf_counter_ns()
         execution_time = end_time - start_time
         return MetaDataAndResultPerformanceTest(
             execution_time=execution_time,
@@ -186,7 +186,7 @@ class SimulateTransferLearningTestCase(PerformanceTestCase):
         See :func:`baybe.simulation.transfer_learning.simulate_transfer_learning`
         for more information.
         """
-        start_time = time.perf_counter()
+        start_time = time.perf_counter_ns()
         result = simulate_transfer_learning(
             self.campaign,
             self.lookup,
@@ -195,7 +195,7 @@ class SimulateTransferLearningTestCase(PerformanceTestCase):
             groupby=self.groupby,
             n_mc_iterations=self.n_mc_iterations,
         )
-        end_time = time.perf_counter()
+        end_time = time.perf_counter_ns()
         execution_time = end_time - start_time
         return MetaDataAndResultPerformanceTest(
             execution_time=execution_time,
@@ -237,7 +237,7 @@ class SimulateExperimentTestCase(PerformanceTestCase):
         See :func:`baybe.simulation.core.simulate_experiment`
         for more information.
         """
-        start_time = time.perf_counter()
+        start_time = time.perf_counter_ns()
         result = simulate_experiment(
             self.campaign,
             self.lookup,
@@ -248,7 +248,7 @@ class SimulateExperimentTestCase(PerformanceTestCase):
             impute_mode=self.impute_mode,
             noise_percent=self.noise_percent,
         )
-        end_time = time.perf_counter()
+        end_time = time.perf_counter_ns()
         execution_time = end_time - start_time
         return MetaDataAndResultPerformanceTest(
             execution_time=execution_time,
