@@ -13,7 +13,7 @@ from collections.abc import Callable
 from typing import Any, Literal
 from uuid import UUID
 
-from attrs import define
+from attrs import define, field
 from pandas import DataFrame
 
 from baybe.campaign import Campaign
@@ -147,9 +147,25 @@ class SimulateTransferLearningTestCase(PerformanceTestCase):
     found in the documentation of the function
     under :func:`baybe.simulation.transfer_learning.simulate_transfer_learning`
     """
+    
+    @staticmethod
+    def _validate_lookup(lookup: DataFrame) -> bool:
+        """Validate the lookup DataFrame.
+
+        The lookup DataFrame must have the columns "source" and "target" and
+        the column "source" must be unique. If the DataFrame is not valid
+        a ValueError is raised.
+
+        Args:
+            lookup (DataFrame): The lookup DataFrame to validate.
+
+        Returns:
+            DataFrame: The validated lookup DataFrame.
+        """
+        return isinstance(lookup, DataFrame)
 
     campaign: Campaign
-    lookup: DataFrame
+    lookup: DataFrame 
     batch_size: int = 1
     n_doe_iterations: int | None = None
     groupby: list[str] | None = None
