@@ -19,9 +19,9 @@ from tests.performance_tests.test_cases import (
     TRANSFER_LEARNING_TEST_CASES,
 )
 from tests.performance_tests.utils import (
+    PerformanceTestCase,
     ResultPersistenceInterface,
     S3ExperimentResultPersistence,
-    PerformanceTestCase,
 )
 
 pytestmark = pytest.mark.skipif(

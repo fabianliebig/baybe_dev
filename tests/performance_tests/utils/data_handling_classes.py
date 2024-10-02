@@ -16,7 +16,9 @@ from pandas import DataFrame
 from sortedcontainers import SortedDict, SortedList
 
 from baybe import __version__
-from tests.performance_tests.utils.testcases_classes import MetaDataAndResultPerformanceTest
+from tests.performance_tests.utils.testcases_classes import (
+    MetaDataAndResultPerformanceTest,
+)
 
 
 @define

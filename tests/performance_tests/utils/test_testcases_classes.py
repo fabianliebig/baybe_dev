@@ -10,10 +10,10 @@ from baybe.parameters.base import Parameter
 from baybe.parameters.substance import SubstanceEncoding, SubstanceParameter
 from baybe.searchspace.core import SearchSpace
 from tests.performance_tests.utils.testcases_classes import (
+    MetaDataAndResultPerformanceTest,
     SimulateExperimentTestCase,
     SimulateScenariosTestCase,
     SimulateTransferLearningTestCase,
-    MetaDataAndResultPerformanceTest,
 )
 
 

@@ -11,7 +11,9 @@ import pytest
 from tests.performance_tests.utils.data_handling_classes import (
     S3ExperimentResultPersistence,
 )
-from tests.performance_tests.utils.testcases_classes import MetaDataAndResultPerformanceTest
+from tests.performance_tests.utils.testcases_classes import (
+    MetaDataAndResultPerformanceTest,
+)
 
 
 @pytest.fixture

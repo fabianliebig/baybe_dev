@@ -1,6 +1,6 @@
 """Test cases for the performance tests classes."""
 
-from typing import Callable, List
+from typing import Callable
 from uuid import UUID, uuid4
 
 import pytest
@@ -8,8 +8,6 @@ from pandas import DataFrame
 
 from baybe.campaign import Campaign
 from baybe.objective import SingleTargetObjective
-from baybe.parameters.base import Parameter
-from baybe.parameters.substance import SubstanceEncoding, SubstanceParameter
 from baybe.searchspace.core import SearchSpace
 from baybe.targets import NumericalTarget, TargetMode
 from tests.performance_tests.test_cases import (
@@ -17,10 +15,10 @@ from tests.performance_tests.test_cases import (
     PARAMETER_COMBINATION,
 )
 from tests.performance_tests.utils.testcases_classes import (
+    MetaDataAndResultPerformanceTest,
     SimulateExperimentTestCase,
     SimulateScenariosTestCase,
     SimulateTransferLearningTestCase,
-    MetaDataAndResultPerformanceTest,
 )
 
 
