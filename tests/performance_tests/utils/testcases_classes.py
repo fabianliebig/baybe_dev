@@ -8,6 +8,7 @@ future implementations.
 """
 
 import json
+import time
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any, Literal
@@ -31,6 +32,7 @@ class MetaDataAndResultPerformanceTest:
     result: DataFrame
     unique_id: UUID
     title: str
+    execution_time: float
     metadata: dict[str, Any]
 
     def _sanitize_metadata(self) -> dict[str, str]:
@@ -57,6 +59,7 @@ class MetaDataAndResultPerformanceTest:
         removed_none_metadata: dict[str, str] = self._sanitize_metadata()
         removed_none_metadata["unique_id"] = str(self.unique_id)
         removed_none_metadata["title"] = self.title
+        removed_none_metadata["execution_time"] = str(self.execution_time)
         return removed_none_metadata
 
     def to_json(self) -> str:
@@ -103,7 +106,9 @@ class SimulateScenariosTestCase(PerformanceTestCase):
     groupby: list[str] | None = None
     n_mc_iterations: int = 1
     random_seed: int | None = None
-    impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = "random"
+    impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = (
+        "random"
+    )
     noise_percent: float | None = None
 
     def execute_testcase(self) -> MetaDataAndResultPerformanceTest:
@@ -111,6 +116,7 @@ class SimulateScenariosTestCase(PerformanceTestCase):
 
         See :func:`baybe.simulation.scenarios.simulate_scenarios` for more information.
         """
+        start_time = time.perf_counter()
         result = simulate_scenarios(
             self.scenarios,
             self.lookup,
@@ -123,7 +129,10 @@ class SimulateScenariosTestCase(PerformanceTestCase):
             impute_mode=self.impute_mode,
             noise_percent=self.noise_percent,
         )
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
         return MetaDataAndResultPerformanceTest(
+            execution_time=execution_time,
             result=result,
             unique_id=self.unique_id,
             title=self.title,
@@ -147,7 +156,7 @@ class SimulateTransferLearningTestCase(PerformanceTestCase):
     found in the documentation of the function
     under :func:`baybe.simulation.transfer_learning.simulate_transfer_learning`
     """
-    
+
     @staticmethod
     def _validate_lookup(lookup: DataFrame) -> bool:
         """Validate the lookup DataFrame.
@@ -165,7 +174,7 @@ class SimulateTransferLearningTestCase(PerformanceTestCase):
         return isinstance(lookup, DataFrame)
 
     campaign: Campaign
-    lookup: DataFrame 
+    lookup: DataFrame
     batch_size: int = 1
     n_doe_iterations: int | None = None
     groupby: list[str] | None = None
@@ -177,6 +186,7 @@ class SimulateTransferLearningTestCase(PerformanceTestCase):
         See :func:`baybe.simulation.transfer_learning.simulate_transfer_learning`
         for more information.
         """
+        start_time = time.perf_counter()
         result = simulate_transfer_learning(
             self.campaign,
             self.lookup,
@@ -185,7 +195,10 @@ class SimulateTransferLearningTestCase(PerformanceTestCase):
             groupby=self.groupby,
             n_mc_iterations=self.n_mc_iterations,
         )
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
         return MetaDataAndResultPerformanceTest(
+            execution_time=execution_time,
             result=result,
             unique_id=self.unique_id,
             title=self.title,
@@ -213,7 +226,9 @@ class SimulateExperimentTestCase(PerformanceTestCase):
     n_doe_iterations: int | None = None
     initial_data: DataFrame | None = None
     random_seed: int | None = None
-    impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = "random"
+    impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = (
+        "random"
+    )
     noise_percent: float | None = None
 
     def execute_testcase(self) -> MetaDataAndResultPerformanceTest:
@@ -222,6 +237,7 @@ class SimulateExperimentTestCase(PerformanceTestCase):
         See :func:`baybe.simulation.core.simulate_experiment`
         for more information.
         """
+        start_time = time.perf_counter()
         result = simulate_experiment(
             self.campaign,
             self.lookup,
@@ -232,7 +248,10 @@ class SimulateExperimentTestCase(PerformanceTestCase):
             impute_mode=self.impute_mode,
             noise_percent=self.noise_percent,
         )
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
         return MetaDataAndResultPerformanceTest(
+            execution_time=execution_time,
             result=result,
             unique_id=self.unique_id,
             title=self.title,
