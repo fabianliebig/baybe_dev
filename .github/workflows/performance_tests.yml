@@ -1,4 +1,4 @@
-name: Manuell End-to-End Tests
+name: Manuell Performance Tests
 on:
   workflow_dispatch:
 
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
     add-runner:
-      uses: ./.github/workflows/runner_attach_workflow.yml
+      uses: ./.github/workflow/runner_attach_workflow.yml
       with:
         RunnerCount: 1
         RunnerComputeType: "M"
@@ -20,10 +20,10 @@ jobs:
         GitHubToken: ${{ secrets.RUNNER_ATTACH_API_KEY }}
         AWSRoleToAssume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
-    coretest:
+    performancetest:
       needs: add-runner
       runs-on: self-hosted
-      name: Core Tests 3.10
+      name: Performance Tests 3.10
       env:
         BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME: ${{ secrets.TEST_RESULT_S3_BUCKET }}
       steps:
