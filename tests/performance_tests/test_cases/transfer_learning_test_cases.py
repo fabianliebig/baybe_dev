@@ -8,6 +8,8 @@ Attributes:
 from typing import List
 from uuid import UUID
 
+from pandas import DataFrame
+
 from baybe.campaign import Campaign
 from baybe.objective import SingleTargetObjective
 from baybe.searchspace import SearchSpace
@@ -34,7 +36,7 @@ TRANSFER_LEARNING_TEST_CASES: List[SimulateTransferLearningTestCase] = [
         ),
         lookup=LOOKUP_STRUCTURE["hartmann_function"],
         batch_size=2,
-        n_doe_iterations=60,
+        n_doe_iterations=15,
         n_mc_iterations=50,
     )
 ]
