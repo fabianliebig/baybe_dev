@@ -30,7 +30,9 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def all_test_cases_uniquely_identifiable(test_case_list: Sequence[PerformanceTestCase]) -> bool:
+def all_test_cases_uniquely_identifiable(
+    test_case_list: Sequence[PerformanceTestCase],
+) -> bool:
     """Check if all test cases have unique names.
 
     Returns:

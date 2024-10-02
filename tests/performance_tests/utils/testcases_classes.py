@@ -13,7 +13,7 @@ from collections.abc import Callable
 from typing import Any, Literal
 from uuid import UUID
 
-from attrs import define, field
+from attrs import define
 from pandas import DataFrame
 
 from baybe.campaign import Campaign
@@ -103,7 +103,7 @@ class SimulateScenariosTestCase(PerformanceTestCase):
     groupby: list[str] | None = None
     n_mc_iterations: int = 1
     random_seed: int | None = None
-    impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = "error"
+    impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = "random"
     noise_percent: float | None = None
 
     def execute_testcase(self) -> MetaDataAndResultPerformanceTest:
@@ -213,7 +213,7 @@ class SimulateExperimentTestCase(PerformanceTestCase):
     n_doe_iterations: int | None = None
     initial_data: DataFrame | None = None
     random_seed: int | None = None
-    impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = "error"
+    impute_mode: Literal["error", "worst", "best", "mean", "random", "ignore"] = "random"
     noise_percent: float | None = None
 
     def execute_testcase(self) -> MetaDataAndResultPerformanceTest:
