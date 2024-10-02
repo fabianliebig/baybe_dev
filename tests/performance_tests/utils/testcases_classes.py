@@ -132,7 +132,7 @@ class SimulateScenariosTestCase(PerformanceTestCase):
         end_time = time.perf_counter_ns()
         execution_time = end_time - start_time
         return MetaDataAndResultPerformanceTest(
-            execution_time=execution_time,
+            execution_time_ns=execution_time,
             result=result,
             unique_id=self.unique_id,
             title=self.title,
@@ -198,7 +198,7 @@ class SimulateTransferLearningTestCase(PerformanceTestCase):
         end_time = time.perf_counter_ns()
         execution_time = end_time - start_time
         return MetaDataAndResultPerformanceTest(
-            execution_time=execution_time,
+            execution_time_ns=execution_time,
             result=result,
             unique_id=self.unique_id,
             title=self.title,
@@ -251,7 +251,7 @@ class SimulateExperimentTestCase(PerformanceTestCase):
         end_time = time.perf_counter_ns()
         execution_time = end_time - start_time
         return MetaDataAndResultPerformanceTest(
-            execution_time=execution_time,
+            execution_time_ns=execution_time,
             result=result,
             unique_id=self.unique_id,
             title=self.title,
