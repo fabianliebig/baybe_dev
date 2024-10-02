@@ -41,11 +41,11 @@ class ResultPersistenceInterface(ABC):
         return os.environ["GITHUB_SHA"]
 
     date_time: datetime
-    baybe_version: str = field(default=_default_baybe_version())
+    baybe_version: str = field(factory=_default_baybe_version)
     """The version of the Baybe library."""
-    branch: str = field(default=_default_branch())
+    branch: str = field(factory=_default_branch)
     """The branch of the Baybe library from which the workflow was started."""
-    commit_hash: str = field(default=_default_commit_hash())
+    commit_hash: str = field(factory=_default_commit_hash)
 
     @abstractmethod
     def persist_new_result(
@@ -94,7 +94,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             )
         return os.environ["BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME"]
 
-    bucket_name: str = field(default=_default_bucket_name())
+    bucket_name: str = field(factory=_default_bucket_name)
     """The name of the S3 bucket where the results are stored."""
     _object_session = boto3.session.Session()
 
