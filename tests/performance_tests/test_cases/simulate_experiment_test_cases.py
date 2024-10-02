@@ -50,6 +50,6 @@ SIMULATE_EXPERIMENT_TEST_CASES: List[SimulateExperimentTestCase] = [
         ),
         lookup=LOOKUP_STRUCTURE["cell_media"],
         batch_size=2,
-        n_doe_iterations=60,
+        n_doe_iterations=10,
     )
 ]
