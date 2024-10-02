@@ -9,6 +9,12 @@ from baybe.utils.botorch_wrapper import botorch_function_wrapper
 
 
 def create_lookup_for_hartmann() -> DataFrame:
+    """Generate lookup tables for the Hartmann function and its shifted variant.
+
+    Returns:
+        DataFrame: Concatenated lookup tables for the Hartmann function
+        and its shifted variant.
+    """
     DIMENSION = 3
     POINTS_PER_DIM = 7
     BOUNDS = Hartmann(dim=DIMENSION).bounds
