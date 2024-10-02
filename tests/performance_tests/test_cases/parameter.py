@@ -7,11 +7,17 @@ parameters for a performance test.
 from typing import Dict, Sequence
 
 from baybe.parameters import (
+    CategoricalEncoding,
+    CategoricalParameter,
+    NumericalContinuousParameter,
     NumericalDiscreteParameter,
     SubstanceEncoding,
     SubstanceParameter,
 )
 from baybe.parameters.base import Parameter
+from tests.performance_tests.test_cases.gen_parameter_helper_functions import (
+    hartmann_parameters,
+)
 
 PARAMETER_COMBINATION: Dict[str, Sequence[Parameter]] = {
     "aryl_halides_mordred": [
@@ -28,13 +34,13 @@ PARAMETER_COMBINATION: Dict[str, Sequence[Parameter]] = {
             name="ligand",
             encoding=SubstanceEncoding.MORDRED,
             data={
-                "XPhos": "CC(C)C1=CC(C(C)C)=CC(C(C)C)=C1C2=C(P(C3" \
+                "XPhos": "CC(C)C1=CC(C(C)C)=CC(C(C)C)=C1C2=C(P(C3"
                 "CCCCC3)C4CCCCC4)C=CC=C2",
-                "t-BuXPhos": "CC(C)C(C=C(C(C)C)C=C1C(C)C)=C1C2=CC=CC=C2P(C(C)" \
+                "t-BuXPhos": "CC(C)C(C=C(C(C)C)C=C1C(C)C)=C1C2=CC=CC=C2P(C(C)"
                 "(C)C)C(C)(C)C",
-                "t-BuBrettPhos": "CC(C)C1=CC(C(C)C)=CC(C(C)C)=C1C2=C(P(C(C)(C)C)C(C)" \
+                "t-BuBrettPhos": "CC(C)C1=CC(C(C)C)=CC(C(C)C)=C1C2=C(P(C(C)(C)C)C(C)"
                 "(C)C)C(OC)=CC=C2OC",
-                "AdBrettPhos": "CC(C1=C(C2=C(OC)C=CC(OC)=C2P(C34CC5CC(C4)CC(C5)C3)C67" \
+                "AdBrettPhos": "CC(C1=C(C2=C(OC)C=CC(OC)=C2P(C34CC5CC(C4)CC(C5)C3)C67"
                 "CC8CC(C7)CC(C8)C6)C(C(C)C)=CC(C(C)C)=C1)C",
             },
         ),
@@ -62,9 +68,9 @@ PARAMETER_COMBINATION: Dict[str, Sequence[Parameter]] = {
                 "ethyl-5-methylisoxazole-4-carboxylate": "CCOC(=O)c1cnoc1C",
                 "ethyl-isoxazole-3-carboxylate": "CCOC(=O)c1ccon1",
                 "ethyl-isoxazole-4-carboxylate": "CCOC(=O)c1conc1",
-                "methyl-5-(furan-2-yl)isoxazole-3-carboxylate": "COC(=O)c1cc(o" \
+                "methyl-5-(furan-2-yl)isoxazole-3-carboxylate": "COC(=O)c1cc(o"
                 "n1)c2occc2",
-                "methyl-5-(thiophen-2-yl)isoxazole-3-carboxylate": "COC(=O)c1c" \
+                "methyl-5-(thiophen-2-yl)isoxazole-3-carboxylate": "COC(=O)c1c"
                 "c(on1)c2sccc2",
                 "methyl-isoxazole-5-carboxylate": "COC(=O)c1oncc1",
             },
@@ -91,6 +97,52 @@ PARAMETER_COMBINATION: Dict[str, Sequence[Parameter]] = {
             },
         ),
     ],
+    "cell_media": [
+        NumericalContinuousParameter(name="param_1", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_2", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_3", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_4", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_5", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_6", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_7", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_8", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_9", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_10", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_11", bounds=(0, 1)),
+        NumericalContinuousParameter(name="param_12", bounds=(0, 1)),
+        CategoricalParameter(
+            name="cell_line",
+            encoding=CategoricalEncoding.OHE,
+            values=(
+                "P1 13E4 qP",
+                "P2 13E7 qP",
+                "P3 13F1 qP",
+                "P4 13G10 qP",
+                "P5 15-4 qP",
+                "P6 15-5 qP",
+                "P7 18-9 qP",
+                "P8 18-15 qP",
+                "P9 18-17 qP",
+                "P10 23B6 qP",
+                "P1 2F4",
+                "P2 2F5",
+                "P3 15-5",
+                "P4 CHO-S",
+                "P5 DG44",
+                "P6 DuxB11",
+                "P1 23 qP",
+                "P2 3A6 qP",
+                "P3 15-5 qP",
+                "P4 NIST 92-6 qP",
+                "P5 NIST 118-28 qP",
+                "P6 EPO Fc 33 qP",
+                "P7 EPO Fc 10 qP",
+                "P8 41-2 qP",
+                "P9 SP5 qP",
+            ),
+        ),
+    ],
+    "hartmann_function": hartmann_parameters(),
     "direct_arylation_mordred": [
         SubstanceParameter(
             name="Base",
@@ -106,21 +158,21 @@ PARAMETER_COMBINATION: Dict[str, Sequence[Parameter]] = {
             name="Ligand",
             encoding=SubstanceEncoding.MORDRED,
             data={
-                "BrettPhos": "CC(C)C1=CC(C(C)C)=C(C(C(C)C)=C1)C2=C(P(C3CCCCC3)" \
+                "BrettPhos": "CC(C)C1=CC(C(C)C)=C(C(C(C)C)=C1)C2=C(P(C3CCCCC3)"
                 "C4CCCCC4)C(OC)=CC=C2OC",
                 "Di-tert-butylphenylphosphine": "CC(C)(C)P(C1=CC=CC=C1)C(C)(C)C",
-                "(t-Bu)PhCPhos": "CN(C)C1=CC=CC(N(C)C)=C1C2=CC=CC=C2P" \
+                "(t-Bu)PhCPhos": "CN(C)C1=CC=CC(N(C)C)=C1C2=CC=CC=C2P"
                 "(C(C)(C)C)C3=CC=CC=C3",
                 "Tricyclohexylphosphine": "P(C1CCCCC1)(C2CCCCC2)C3CCCCC3",
                 "PPh3": "P(C1=CC=CC=C1)(C2=CC=CC=C2)C3=CC=CC=C3",
-                "XPhos": "CC(C1=C(C2=CC=CC=C2P(C3CCCCC3)C4CCCCC4)C(C" \
+                "XPhos": "CC(C1=C(C2=CC=CC=C2P(C3CCCCC3)C4CCCCC4)C(C"
                 "(C)C)=CC(C(C)C)=C1)C",
                 "P(2-furyl)3": "P(C1=CC=CO1)(C2=CC=CO2)C3=CC=CO3",
                 "Methyldiphenylphosphine": "CP(C1=CC=CC=C1)C2=CC=CC=C2",
                 "1268824-69-6": "CC(OC1=C(P(C2CCCCC2)C3CCCCC3)C(OC(C)C)=CC=C1)C",
-                "JackiePhos": "FC(F)(F)C1=CC(P(C2=C(C3=C(C(C)C)C=C(C(C)" \
+                "JackiePhos": "FC(F)(F)C1=CC(P(C2=C(C3=C(C(C)C)C=C(C(C)"
                 "C)C=C3C(C)C)C(OC)=CC=C2OC)C4=CC(C(F)(F)F)=CC(C(F)(F)F)=C4)=CC(C(F)(F)F)=C1",
-                "SCHEMBL15068049": "C[C@]1(O2)O[C@](C[C@]2(C)P3C4=CC=C" \
+                "SCHEMBL15068049": "C[C@]1(O2)O[C@](C[C@]2(C)P3C4=CC=C"
                 "C=C4)(C)O[C@]3(C)C1",
                 "Me2PPh": "CP(C)C1=CC=CC=C1",
             },
@@ -153,21 +205,21 @@ PARAMETER_COMBINATION: Dict[str, Sequence[Parameter]] = {
             name="Ligand",
             encoding=SubstanceEncoding.RDKIT,
             data={
-                "BrettPhos": "CC(C)C1=CC(C(C)C)=C(C(C(C)C)=C1)C2=C(P(C3CCCCC3)" \
+                "BrettPhos": "CC(C)C1=CC(C(C)C)=C(C(C(C)C)=C1)C2=C(P(C3CCCCC3)"
                 "C4CCCCC4)C(OC)=CC=C2OC",
                 "Di-tert-butylphenylphosphine": "CC(C)(C)P(C1=CC=CC=C1)C(C)(C)C",
-                "(t-Bu)PhCPhos": "CN(C)C1=CC=CC(N(C)C)=C1C2=CC=CC=C2P" \
+                "(t-Bu)PhCPhos": "CN(C)C1=CC=CC(N(C)C)=C1C2=CC=CC=C2P"
                 "(C(C)(C)C)C3=CC=CC=C3",
                 "Tricyclohexylphosphine": "P(C1CCCCC1)(C2CCCCC2)C3CCCCC3",
                 "PPh3": "P(C1=CC=CC=C1)(C2=CC=CC=C2)C3=CC=CC=C3",
-                "XPhos": "CC(C1=C(C2=CC=CC=C2P(C3CCCCC3)C4CCCCC4)C(C" \
+                "XPhos": "CC(C1=C(C2=CC=CC=C2P(C3CCCCC3)C4CCCCC4)C(C"
                 "(C)C)=CC(C(C)C)=C1)C",
                 "P(2-furyl)3": "P(C1=CC=CO1)(C2=CC=CO2)C3=CC=CO3",
                 "Methyldiphenylphosphine": "CP(C1=CC=CC=C1)C2=CC=CC=C2",
                 "1268824-69-6": "CC(OC1=C(P(C2CCCCC2)C3CCCCC3)C(OC(C)C)=CC=C1)C",
-                "JackiePhos": "FC(F)(F)C1=CC(P(C2=C(C3=C(C(C)C)C=C(C(C)" \
+                "JackiePhos": "FC(F)(F)C1=CC(P(C2=C(C3=C(C(C)C)C=C(C(C)"
                 "C)C=C3C(C)C)C(OC)=CC=C2OC)C4=CC(C(F)(F)F)=CC(C(F)(F)F)=C4)=CC(C(F)(F)F)=C1",
-                "SCHEMBL15068049": "C[C@]1(O2)O[C@](C[C@]2(C)P3C4=CC=C" \
+                "SCHEMBL15068049": "C[C@]1(O2)O[C@](C[C@]2(C)P3C4=CC=C"
                 "C=C4)(C)O[C@]3(C)C1",
                 "Me2PPh": "CP(C)C1=CC=CC=C1",
             },

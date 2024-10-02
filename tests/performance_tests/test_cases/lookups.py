@@ -13,6 +13,10 @@ from typing import Callable, Dict, Union
 
 from pandas import DataFrame, read_csv
 
+from tests.performance_tests.test_cases.gen_lookup_functions import (
+    create_lookup_for_hartmann,
+)
+
 PATH_PREFIX = Path("tests//performance_tests//test_cases//lookup_data//")
 
 LOOKUP_STRUCTURE: Dict[str, Union[DataFrame, Callable]] = {
@@ -20,4 +24,6 @@ LOOKUP_STRUCTURE: Dict[str, Union[DataFrame, Callable]] = {
     "direct_arylation": read_csv(
         PATH_PREFIX.joinpath("direct_arylation.csv").resolve()
     ),
+    "cell_media": read_csv(PATH_PREFIX.joinpath("cell_media.csv").resolve()),
+    "hartmann_function": create_lookup_for_hartmann(),
 }

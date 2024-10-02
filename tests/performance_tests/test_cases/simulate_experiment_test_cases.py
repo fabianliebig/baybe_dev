@@ -36,5 +36,20 @@ SIMULATE_EXPERIMENT_TEST_CASES: List[SimulateExperimentTestCase] = [
         lookup=LOOKUP_STRUCTURE["aryl_halides"],
         batch_size=2,
         n_doe_iterations=60,
+    ),
+    SimulateExperimentTestCase(
+        unique_id=UUID("144b6de4-b6c1-4a23-9eac-6e290188e5c5"),
+        title="Cell Media Simulation maximum titer",
+        campaign=Campaign(
+            searchspace=SearchSpace.from_product(
+                parameters=PARAMETER_COMBINATION["cell_media"]
+            ),
+            objective=SingleTargetObjective(
+                target=NumericalTarget(name="titer", mode=TargetMode.MAX) 
+            ),
+        ),
+        lookup=LOOKUP_STRUCTURE["cell_media"],
+        batch_size=2,
+        n_doe_iterations=60,
     )
 ]
