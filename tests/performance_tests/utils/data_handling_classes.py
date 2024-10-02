@@ -193,12 +193,12 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         versions = list(map_of_versions.keys())
         compare_version = self._sanitize_baybe_version(self.baybe_version)
         if compare_version not in versions:
-            return versions[-1][0]
+            return versions[-1]
         current_index = versions.index(compare_version)
         VERSION_HAS_NO_COMPARATIVE = current_index <= 0
         if VERSION_HAS_NO_COMPARATIVE:
             raise ValueError("The current version has no previous version to compare.")
-        return versions[current_index - 1][0]
+        return versions[current_index - 1]
 
     def _extract_baybe_versions(
         self, page_iterator: PageIterator
