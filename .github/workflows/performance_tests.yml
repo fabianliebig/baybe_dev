@@ -13,7 +13,7 @@ permissions:
 
 jobs:
     add-runner:
-      uses: ./.github/workflow/runner_attach_workflow.yml
+      uses: ./.github/workflows/runner_attach_workflow.yml
       with:
         RunnerCount: 1
         RunnerComputeType: "M"
