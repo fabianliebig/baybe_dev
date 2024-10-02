@@ -49,8 +49,8 @@ def combine_simulations() -> Sequence[PerformanceTestCase]:
     """
     testcase_list: Sequence[PerformanceTestCase] = (
         SCENARIO_TEST_CASES
-       # + SIMULATE_EXPERIMENT_TEST_CASES
-       # + TRANSFER_LEARNING_TEST_CASES
+        + SIMULATE_EXPERIMENT_TEST_CASES
+        + TRANSFER_LEARNING_TEST_CASES
     )
     if not all_test_cases_uniquely_identifiable(testcase_list):
         raise ValueError(

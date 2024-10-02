@@ -36,7 +36,7 @@ TRANSFER_LEARNING_TEST_CASES: List[SimulateTransferLearningTestCase] = [
         ),
         lookup=LOOKUP_STRUCTURE["hartmann_function"],
         batch_size=2,
-        n_doe_iterations=15,
-        n_mc_iterations=50,
+        n_doe_iterations=10,
+        n_mc_iterations=30,
     )
 ]
