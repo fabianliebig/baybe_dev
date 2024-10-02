@@ -54,7 +54,7 @@ def combine_simulations() -> Sequence[TestCase]:
     )
     if not all_test_cases_uniquely_identifiable(testcase_list):
         raise ValueError(
-            "All test cases must have unique "
+            "All performance test cases must have unique "
             "names to compare their results over time."
         )
     return testcase_list
