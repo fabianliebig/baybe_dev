@@ -147,7 +147,7 @@ def test_get_newest_s3_object_with_results(
         }
     ]
 
-    newest_object = s3_persistence._get_newest_s3_object(iterator) # type: ignore
+    newest_object = s3_persistence._get_newest_s3_object(iterator)  # type: ignore
     assert newest_object["Key"] == "key2"
 
 
@@ -157,7 +157,7 @@ def test_get_newest_s3_object_no_results(s3_persistence: S3ExperimentResultPersi
     with pytest.raises(
         ValueError, match="No result found for the given experiment ID."
     ):
-        s3_persistence._get_newest_s3_object(iterator) # type: ignore
+        s3_persistence._get_newest_s3_object(iterator)  # type: ignore
 
 
 def test_get_newest_s3_object_multiple_pages(
@@ -180,5 +180,5 @@ def test_get_newest_s3_object_multiple_pages(
         ]
     )
 
-    newest_object = s3_persistence._get_newest_s3_object(iterator) # type: ignore
+    newest_object = s3_persistence._get_newest_s3_object(iterator)  # type: ignore
     assert newest_object["Key"] == "key4"

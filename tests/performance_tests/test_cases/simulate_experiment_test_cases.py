@@ -3,10 +3,10 @@
 This module contains a test case for simulating an experiment.
 
 Attributes:
-    SIMULATE_EXPERIMENT_TEST_CASES (Sequence): A list of SimulateExperimentTestCase objects.
+    SIMULATE_EXPERIMENT_TEST_CASES (Sequence): A list of
+    SimulateExperimentTestCase objects.
 """
 
-from typing import List
 from uuid import UUID
 
 from baybe.campaign import Campaign
@@ -21,7 +21,7 @@ from tests.performance_tests.utils import (
     SimulateExperimentTestCase,
 )
 
-SIMULATE_EXPERIMENT_TEST_CASES: List[SimulateExperimentTestCase] = [
+SIMULATE_EXPERIMENT_TEST_CASES: list[SimulateExperimentTestCase] = [
     SimulateExperimentTestCase(
         unique_id=UUID("23df40f6-243c-49ca-ae71-81d733d8a88d"),
         title="Aryl Halides Simulation maximum yield with Mordred",
@@ -45,11 +45,11 @@ SIMULATE_EXPERIMENT_TEST_CASES: List[SimulateExperimentTestCase] = [
                 parameters=PARAMETER_COMBINATION["cell_media"]
             ),
             objective=SingleTargetObjective(
-                target=NumericalTarget(name="titer", mode=TargetMode.MAX) 
+                target=NumericalTarget(name="titer", mode=TargetMode.MAX)
             ),
         ),
         lookup=LOOKUP_STRUCTURE["cell_media"],
         batch_size=2,
         n_doe_iterations=10,
-    )
+    ),
 ]

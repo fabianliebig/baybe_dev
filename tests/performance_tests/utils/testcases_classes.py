@@ -166,7 +166,7 @@ class SimulateTransferLearningTestCase(PerformanceTestCase):
         a ValueError is raised.
 
         Args:
-            lookup (DataFrame): The lookup DataFrame to validate.
+            lookup: The lookup DataFrame to validate.
 
         Returns:
             DataFrame: The validated lookup DataFrame.

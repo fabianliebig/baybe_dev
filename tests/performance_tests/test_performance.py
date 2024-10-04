@@ -6,8 +6,8 @@ compared between different versions of the package.
 """
 
 import os
+from collections.abc import Sequence
 from datetime import datetime
-from typing import Sequence
 
 import pytest
 from filelock import FileLock
@@ -33,21 +33,31 @@ pytestmark = pytest.mark.skipif(
 def all_test_cases_uniquely_identifiable(
     test_case_list: Sequence[PerformanceTestCase],
 ) -> bool:
-    """Check if all test cases have unique names.
+    """Check if all test cases in the list have unique identifiers.
+
+    Args:
+        test_case_list: A list of performance test cases.
 
     Returns:
-        bool: True if all test cases have unique names, False otherwise.
+        bool: True if all test cases have unique identifiers, False otherwise.
     """
-    unique_uuids = set([testcase.unique_id for testcase in test_case_list])
+    unique_uuids = {testcase.unique_id for testcase in test_case_list}
     return len(test_case_list) == len(unique_uuids)
 
 
 def combine_simulations() -> Sequence[PerformanceTestCase]:
-    """Combines different sets of test cases into a single list.
+    """Combines multiple lists of performance test cases into a single sequence.
+
+    This function merges the test cases from SCENARIO_TEST_CASES,
+    SIMULATE_EXPERIMENT_TEST_CASES, and TRANSFER_LEARNING_TEST_CASES into
+    one list. It ensures that all test cases have unique identifiers to
+    facilitate comparison of their results over time.
 
     Returns:
-        List[TestCase]: A list containing all the test cases from SCENARIO_TEST_CASES,
-        SIMULATE_EXPERIMENT_TEST_CASES, and TRANSFER_LEARNING_TEST_CASES.
+        Sequence[PerformanceTestCase]: A combined list of performance test cases.
+
+    Raises:
+        ValueError: If any of the test cases do not have unique identifiers.
     """
     testcase_list: Sequence[PerformanceTestCase] = (
         SCENARIO_TEST_CASES
@@ -77,8 +87,8 @@ def time_stamp_test_execution(
     it is important that all tests use the same date.
 
     Args:
-        tmp_path_factory (TempPathFactory): The factory for creating temporary directories.
-        worker_id (str): The ID of the worker.
+        tmp_path_factory: The factory for temporary directories.
+        worker_id: The ID of the worker.
 
     Returns:
         datetime: The timestamp of the test execution.
@@ -111,7 +121,7 @@ def result_data_handler(
     since basic boto3 is not thread safe but creating a boto3 client session is.
 
     Parameters:
-        test_time_stamp (datetime): The timestamp of the test.
+        time_stamp_test_execution: The timestamp of the test.
 
     Returns:
         ResultPersistenceInterface: An instance of ResultPersistenceInterface.

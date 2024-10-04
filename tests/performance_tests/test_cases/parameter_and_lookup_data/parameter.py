@@ -4,7 +4,7 @@ Each `Parameter` object represents a specific combination of
 parameters for a performance test.
 """
 
-from typing import Dict, Sequence
+from collections.abc import Sequence
 
 from baybe.parameters import (
     CategoricalEncoding,
@@ -19,7 +19,7 @@ from tests.performance_tests.test_cases.gen_parameter_helper_functions import (
     hartmann_parameters,
 )
 
-PARAMETER_COMBINATION: Dict[str, Sequence[Parameter]] = {
+PARAMETER_COMBINATION: dict[str, Sequence[Parameter]] = {
     "aryl_halides_mordred": [
         SubstanceParameter(
             name="base",

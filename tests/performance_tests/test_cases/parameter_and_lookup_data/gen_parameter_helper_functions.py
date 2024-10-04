@@ -1,6 +1,6 @@
 """Helper functions for generating parameters for PARAMETER_COMBINATION."""
 
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
 from botorch.test_functions.synthetic import Hartmann

@@ -1,7 +1,11 @@
 """List of reusable test case parameters for performance tests."""
 
-from tests.performance_tests.test_cases.lookups import LOOKUP_STRUCTURE
-from tests.performance_tests.test_cases.parameter import PARAMETER_COMBINATION
+from tests.performance_tests.test_cases.parameter_and_lookup_data.lookups import (
+    LOOKUP_STRUCTURE,
+)
+from tests.performance_tests.test_cases.parameter_and_lookup_data.parameter import (
+    PARAMETER_COMBINATION,
+)
 from tests.performance_tests.test_cases.scenarios_test_cases import SCENARIO_TEST_CASES
 from tests.performance_tests.test_cases.simulate_experiment_test_cases import (
     SIMULATE_EXPERIMENT_TEST_CASES,
@@ -15,5 +19,5 @@ __all__ = [
     "PARAMETER_COMBINATION",
     "SCENARIO_TEST_CASES",
     "SIMULATE_EXPERIMENT_TEST_CASES",
-    "TRANSFER_LEARNING_TEST_CASES"
+    "TRANSFER_LEARNING_TEST_CASES",
 ]

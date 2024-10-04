@@ -8,8 +8,8 @@ Attributes:
 
 """
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Dict, Union
 
 from pandas import DataFrame, read_csv
 
@@ -19,7 +19,7 @@ from tests.performance_tests.test_cases.gen_lookup_functions import (
 
 PATH_PREFIX = Path("tests//performance_tests//test_cases//lookup_data//")
 
-LOOKUP_STRUCTURE: Dict[str, Union[DataFrame, Callable]] = {
+LOOKUP_STRUCTURE: dict[str, DataFrame | Callable] = {
     "aryl_halides": read_csv(PATH_PREFIX.joinpath("aryl_halides.csv").resolve()),
     "direct_arylation": read_csv(
         PATH_PREFIX.joinpath("direct_arylation.csv").resolve()

@@ -3,7 +3,6 @@
 The `SCENARIO_TEST_CASES` variable is a Sequence of `SimulateScenariosTestCase` objects.
 """
 
-from typing import List
 from uuid import UUID
 
 from baybe.campaign import Campaign
@@ -18,10 +17,10 @@ from tests.performance_tests.utils import (
     SimulateScenariosTestCase,
 )
 
-SCENARIO_TEST_CASES: List[SimulateScenariosTestCase] = [
+SCENARIO_TEST_CASES: list[SimulateScenariosTestCase] = [
     SimulateScenariosTestCase(
         unique_id=UUID("abefe05d-b6ca-45cf-a9fa-1dce9144eadc"),
-        title="Direct Arylation Scenario Simulation maximum" \
+        title="Direct Arylation Scenario Simulation maximum"
         " yield with Mordred and RDKit",
         scenarios={
             "Mordred": Campaign(

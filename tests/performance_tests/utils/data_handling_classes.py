@@ -4,7 +4,6 @@ import io
 import os
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Dict, List
 from uuid import UUID
 
 import boto3
@@ -56,8 +55,8 @@ class ResultPersistenceInterface(ABC):
         """Persists a new result for the given experiment.
 
         Args:
-            experiment_id (UUID): The ID of the experiment.
-            result (TestMetaDataAndResult): The result to be persisted.
+            experiment_id: The ID of the experiment.
+            result: The result to be persisted.
         """
         pass
 
@@ -71,7 +70,7 @@ class ResultPersistenceInterface(ABC):
         version to version which would be not noticeable in the short term.
 
         Parameters:
-            experiment_id (UUID): The ID of the experiment.
+            experiment_id: The ID of the experiment.
 
         Returns:
             Dataframe: The last result for the given experiment ID.
@@ -106,8 +105,8 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         """Persists a new result for the given experiment.
 
         Args:
-            experiment_id (UUID): The ID of the experiment.
-            result (TestMetaDataAndResult): The result to be persisted.
+            experiment_id: The ID of the experiment.
+            result: The result to be persisted.
         """
         client = self._object_session.client("s3")
         bucket_path = (
@@ -130,7 +129,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         """Retrieves the oldest S3 object from the given iterator.
 
         Args:
-            iterator (PageIterator): An iterator that provides access to S3 objects.
+            iterator: An iterator that provides access to S3 objects.
 
         Returns:
             dict: The oldest S3 object as a dictionary.
@@ -161,7 +160,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         version to version which would be not noticeable in the short term.
 
         Parameters:
-            experiment_id (UUID): The ID of the experiment.
+            experiment_id: The ID of the experiment.
 
         Returns:
             Dataframe: The last result for the given experiment ID.
@@ -176,7 +175,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         """Retrieves the last available release for a given experiment ID.
 
         Parameters:
-            experiment_id (UUID): The ID of the experiment.
+            experiment_id: The ID of the experiment.
 
         Returns:
             str: The last available release version.
@@ -189,7 +188,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         page_iterator = paginator.paginate(
             Bucket=self.bucket_name, Prefix=f"{experiment_id}/main"
         )
-        map_of_versions: Dict[str, List[str]] = self._extract_baybe_versions(
+        map_of_versions: dict[str, list[str]] = self._extract_baybe_versions(
             page_iterator
         )
         versions = list(map_of_versions.keys())
@@ -204,11 +203,11 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
 
     def _extract_baybe_versions(
         self, page_iterator: PageIterator
-    ) -> Dict[str, List[str]]:
+    ) -> dict[str, list[str]]:
         """Extracts the Baybe versions from the given page iterator.
 
         Args:
-            page_iterator (PageIterator): An iterator that provides pages.
+            page_iterator: An iterator that provides pages.
 
         Returns:
             Dict[str, List[str]]: A dictionary mapping Baybe versions to a set
@@ -230,26 +229,24 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         """Sanitizes the Baybe version by removing any post-release version information.
 
         Parameters:
-        - baybe_version (str): The Baybe version to be sanitized.
+          baybe_version: The Baybe version to be sanitized.
 
         Returns:
         - str: The sanitized Baybe version.
         """
-        POST_RELEASE_VERSION = len(baybe_version.split('.')) > 3
+        POST_RELEASE_VERSION = len(baybe_version.split(".")) > 3
         if POST_RELEASE_VERSION:
-            baybe_version = '.'.join(baybe_version.split('.')[:3])
+            baybe_version = ".".join(baybe_version.split(".")[:3])
         return baybe_version
 
     def _get_newest_dataset_from_last_release(self, experiment_id: UUID) -> DataFrame:
         """Retrieves the newest dataset from the release just before the current one.
 
         Args:
-            experiment_id (UUID): The ID of the experiment.
-            paginator (Paginator): The paginator object used to paginate
-            through S3 objects.
+            experiment_id: The ID of the experiment.
 
         Returns:
-            DataFrame: The retrieved dataset as a pandas DataFrame.
+            - DataFrame: The retrieved dataset as a pandas DataFrame.
         """
         client = self._object_session.client("s3")
         paginator = client.get_paginator("list_objects_v2")
@@ -267,7 +264,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         """Retrieves a DataFrame from an S3 bucket.
 
         Parameters:
-            key (str): The key of the object in the S3 bucket.
+            key: The key of the object in the S3 bucket.
 
         Returns:
             DataFrame: The DataFrame read from the CSV data.
@@ -282,11 +279,10 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         """Retrieves the newest dataset from the last release for a experiment.
 
         Args:
-            experiment_id (UUID): The ID of the experiment.
-            paginator (Paginator): The paginator object used to paginate through S3 keys
+            experiment_id: The ID of the experiment.
 
         Returns:
-            DataFrame: The retrieved dataset as a pandas DataFrame.
+            The retrieved dataset as a pandas DataFrame.
         """
         client = self._object_session.client("s3")
         paginator = client.get_paginator("list_objects_v2")
