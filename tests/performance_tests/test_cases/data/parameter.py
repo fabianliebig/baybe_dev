@@ -15,7 +15,7 @@ from baybe.parameters import (
     SubstanceParameter,
 )
 from baybe.parameters.base import Parameter
-from tests.performance_tests.test_cases.gen_parameter_helper_functions import (
+from tests.performance_tests.test_cases.data.gen_parameter_functions import (
     hartmann_parameters,
 )
 

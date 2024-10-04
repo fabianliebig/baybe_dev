@@ -13,11 +13,11 @@ from pathlib import Path
 
 from pandas import DataFrame, read_csv
 
-from tests.performance_tests.test_cases.gen_lookup_functions import (
+from tests.performance_tests.test_cases.data.gen_lookup_functions import (
     create_lookup_for_hartmann,
 )
 
-PATH_PREFIX = Path("tests//performance_tests//test_cases//lookup_data//")
+PATH_PREFIX = Path("tests//performance_tests//test_cases//data//lookup_data//")
 
 LOOKUP_STRUCTURE: dict[str, DataFrame | Callable] = {
     "aryl_halides": read_csv(PATH_PREFIX.joinpath("aryl_halides.csv").resolve()),

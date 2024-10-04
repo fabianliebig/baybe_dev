@@ -1,9 +1,9 @@
 """List of reusable test case parameters for performance tests."""
 
-from tests.performance_tests.test_cases.parameter_and_lookup_data.lookups import (
+from tests.performance_tests.test_cases.data.lookups import (
     LOOKUP_STRUCTURE,
 )
-from tests.performance_tests.test_cases.parameter_and_lookup_data.parameter import (
+from tests.performance_tests.test_cases.data.parameter import (
     PARAMETER_COMBINATION,
 )
 from tests.performance_tests.test_cases.scenarios_test_cases import SCENARIO_TEST_CASES
