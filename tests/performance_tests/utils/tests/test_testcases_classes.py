@@ -1,6 +1,6 @@
 """Test cases for the performance tests classes."""
 
-from typing import Callable
+from collections.abc import Callable
 from uuid import UUID, uuid4
 
 import pytest

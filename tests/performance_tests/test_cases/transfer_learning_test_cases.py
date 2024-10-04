@@ -5,7 +5,6 @@ Attributes:
     objects representing the test cases.
 """
 
-from typing import List
 from uuid import UUID
 
 from baybe.campaign import Campaign
@@ -20,7 +19,7 @@ from tests.performance_tests.utils import (
     SimulateTransferLearningTestCase,
 )
 
-TRANSFER_LEARNING_TEST_CASES: List[SimulateTransferLearningTestCase] = [
+TRANSFER_LEARNING_TEST_CASES: list[SimulateTransferLearningTestCase] = [
     SimulateTransferLearningTestCase(
         unique_id=UUID("c3cb1de4-f631-493b-94a8-1dfcd67f13cb"),
         title="Cell Media Simulation maximum titer",
