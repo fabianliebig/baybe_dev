@@ -1,6 +1,7 @@
 """Test module for the S3ExperimentResultPersistence class."""
 
 import io
+import os
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 from uuid import UUID
@@ -13,6 +14,11 @@ from tests.performance_tests.utils.data_handling_classes import (
 )
 from tests.performance_tests.utils.testcases_classes import (
     MetaDataAndResultPerformanceTest,
+)
+
+pytestmark = pytest.mark.skipif(
+    os.environ.get("BAYBE_TEST_ENV") != "FULLTEST",
+    reason="Only possible in FULLTEST environment.",
 )
 
 

@@ -1,5 +1,6 @@
 """Test cases for the performance tests classes."""
 
+import os
 from collections.abc import Callable
 from uuid import UUID, uuid4
 
@@ -19,6 +20,11 @@ from tests.performance_tests.utils.testcases_classes import (
     SimulateExperimentTestCase,
     SimulateScenariosTestCase,
     SimulateTransferLearningTestCase,
+)
+
+pytestmark = pytest.mark.skipif(
+    os.environ.get("BAYBE_TEST_ENV") != "FULLTEST",
+    reason="Only possible in FULLTEST environment.",
 )
 
 
