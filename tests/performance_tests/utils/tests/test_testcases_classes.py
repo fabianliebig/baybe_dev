@@ -47,7 +47,7 @@ def sample_uuid():
 def test_metadata_and_result_to_s3_dict(sample_dataframe: DataFrame, sample_uuid: UUID):
     metadata = {"key1": "value1", "key2": None}
     test_metadata_and_result = MetaDataAndResultPerformanceTest(
-        execution_time=0.0,
+        execution_time_ns=0,
         result=sample_dataframe,
         unique_id=sample_uuid,
         title="Sample Title",
