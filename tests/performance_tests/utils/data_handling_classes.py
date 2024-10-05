@@ -28,25 +28,9 @@ class ResultPersistenceInterface(ABC):
     def _default_baybe_version() -> str:
         return __version__
 
-    @staticmethod
-    def _default_branch() -> str:
-        if "GITHUB_REF_NAME" not in os.environ and os.environ:
-            raise ValueError("The environment variable GITHUB_REF_NAME is not set.")
-        path_usable_branch = os.environ["GITHUB_REF_NAME"].replace("/", "-")
-        return path_usable_branch
-
-    @staticmethod
-    def _default_commit_hash() -> str:
-        if "GITHUB_SHA" not in os.environ:
-            raise ValueError("The environment variable GITHUB_SHA is not set.")
-        return os.environ["GITHUB_SHA"]
-
     date_time: datetime
     baybe_version: str = field(factory=_default_baybe_version)
     """The version of the Baybe library."""
-    branch: str = field(factory=_default_branch)
-    """The branch of the Baybe library from which the workflow was started."""
-    commit_hash: str = field(factory=_default_commit_hash)
 
     @abstractmethod
     def persist_new_result(
@@ -84,20 +68,34 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
 
     @staticmethod
     def _default_bucket_name() -> str:
-        ENVIRONMENT_NOT_SET = (
-            "BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME" not in os.environ
-        )
+        ENVIRONMENT_NOT_SET = "BAYBE_PERFORMANCE_PERSISTANCE_PATH" not in os.environ
         if ENVIRONMENT_NOT_SET:
             raise ValueError(
                 "The environment variable "
-                "BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME is not set. "
+                "BAYBE_PERFORMANCE_PERSISTANCE_PATH is not set. "
                 "A bucket name must be provided."
             )
-        return os.environ["BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME"]
+        return os.environ["BAYBE_PERFORMANCE_PERSISTANCE_PATH"]
+
+    @staticmethod
+    def _default_branch() -> str:
+        if "GITHUB_REF_NAME" not in os.environ and os.environ:
+            raise ValueError("The environment variable GITHUB_REF_NAME is not set.")
+        path_usable_branch = os.environ["GITHUB_REF_NAME"].replace("/", "-")
+        return path_usable_branch
+
+    @staticmethod
+    def _default_commit_hash() -> str:
+        if "GITHUB_SHA" not in os.environ:
+            raise ValueError("The environment variable GITHUB_SHA is not set.")
+        return os.environ["GITHUB_SHA"]
 
     bucket_name: str = field(factory=_default_bucket_name)
     """The name of the S3 bucket where the results are stored."""
     _object_session = boto3.session.Session()
+    branch: str = field(factory=_default_branch)
+    """The branch of the Baybe library from which the workflow was started."""
+    commit_hash: str = field(factory=_default_commit_hash)
 
     def persist_new_result(
         self, experiment_id: UUID, result: MetaDataAndResultPerformanceTest
@@ -293,3 +291,50 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
 
         key = oldest_object["Key"]
         return self._retrieve_dataframe_from_s3(key)
+
+
+@define
+class LocalExperimentResultPersistence(ResultPersistenceInterface):
+    """Class for persisting experiment results locally."""
+
+    _path: str = "tests/performance_tests/results"
+
+    def __attrs_post_init__(self):
+        os.makedirs(self._path, exist_ok=True)
+
+    def persist_new_result(
+        self, experiment_id: UUID, result: MetaDataAndResultPerformanceTest
+    ) -> None:
+        """Persists a new result for the given experiment.
+
+        Args:
+            experiment_id: The ID of the experiment.
+            result: The result to be persisted.
+        """
+        result.result.to_csv(
+            f"{self._path}/{experiment_id}-{self.date_time.isoformat}-{self.baybe_version}.csv"
+        )
+
+    def load_compare_result(self, experiment_id: UUID) -> DataFrame:
+        """Load the oldest stable result for a given experiment ID.
+
+        Loads the oldest result from an experiment that is created from the main branch
+        of the Baybe library. This is done to compare the performance of the library
+        over a longer time period and to ensure that the results don't just a bit from
+        version to version which would be not noticeable in the short term.
+
+        Parameters:
+            experiment_id: The ID of the experiment.
+
+        Returns:
+            Dataframe: The last result for the given experiment ID.
+        """
+        csv_files = SortedList(
+            [
+                f
+                for f in os.listdir(self._path)
+                if f.startswith(str(experiment_id)) and f.endswith(".csv")
+            ]
+        )
+        OLDEST_FILE = csv_files[0]
+        return pandas.read_csv(f"{self._path}/{OLDEST_FILE}")

@@ -19,6 +19,7 @@ from tests.performance_tests.test_cases import (
     TRANSFER_LEARNING_TEST_CASES,
 )
 from tests.performance_tests.utils import (
+    LocalExperimentResultPersistence,
     PerformanceTestCase,
     ResultPersistenceInterface,
     S3ExperimentResultPersistence,
@@ -119,6 +120,7 @@ def result_data_handler(
     This fixture is used to store the results of the performance tests in a persistent
     way with a function scope to ensure that all test cases can run independently
     since basic boto3 is not thread safe but creating a boto3 client session is.
+    For local testing, the results are stored in a local directory.
 
     Parameters:
         time_stamp_test_execution: The timestamp of the test.
@@ -127,7 +129,9 @@ def result_data_handler(
         ResultPersistenceInterface: An instance of ResultPersistenceInterface.
 
     """
-    return S3ExperimentResultPersistence(time_stamp_test_execution)
+    if os.environ.get("BAYBE_PERFORMANCE_PERSISTANCE_PATH"):
+        return S3ExperimentResultPersistence(time_stamp_test_execution)
+    return LocalExperimentResultPersistence(time_stamp_test_execution)
 
 
 @pytest.mark.parametrize("scenario", combine_simulations())

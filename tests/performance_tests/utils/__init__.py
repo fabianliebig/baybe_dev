@@ -1,6 +1,7 @@
 """This module provides utility functions for performance tests."""
 
 from tests.performance_tests.utils.data_handling_classes import (
+    LocalExperimentResultPersistence,
     ResultPersistenceInterface,
     S3ExperimentResultPersistence,
 )
@@ -21,4 +22,5 @@ __all__ = [
     "MetaDataAndResultPerformanceTest",
     "ResultPersistenceInterface",
     "S3ExperimentResultPersistence",
+    "LocalExperimentResultPersistence",
 ]

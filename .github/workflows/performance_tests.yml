@@ -26,7 +26,7 @@ jobs:
       runs-on: self-hosted
       name: Performance Tests 3.10
       env:
-        BAYBE_PERFORMANCE_TEST_RESULT_S3_BUCKET_NAME: ${{ secrets.TEST_RESULT_S3_BUCKET }}
+        BAYBE_PERFORMANCE_PERSISTANCE_PATH: ${{ secrets.TEST_RESULT_S3_BUCKET }}
       steps:
         - uses: actions/checkout@v4
           with:
