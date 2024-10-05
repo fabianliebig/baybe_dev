@@ -1,6 +1,6 @@
-"""End-to-end tests for the performance of the baybe package.
+"""End-to-end tests for the performance of the BayBE package.
 
-Tests the performance of the baybe package by executing long running and compute
+Tests the performance of the BayBE package by executing long running and compute
 intensive example scenarios and persisting the results so that they can be
 compared between different versions of the package.
 """
