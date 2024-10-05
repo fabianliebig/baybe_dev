@@ -28,6 +28,7 @@ build
 .ruff_cache
 .mypy_cache
 htmlcov
+results
 
 # Pictures created by backtesting
 *.png
