@@ -10,12 +10,12 @@ These tests should reflect the performance of the codebase and should be used to
 
 ## Adding a new test case
 
-Each scenario type of BayBE is represented by a separate test case. These are collected in the `testcases` folder where a file for each test scenario type a list of the respective test case class is provided. Here, a new entry can be added which holds the parameter for executing the simulation. For adding or reusing parameter and lookups, the folder `testcases/data` holds dictoraries for the respective parameter in the `parameter.py` file and the lookup tables in the `lookups.py` file. The Keyes are used to reference the parameter and lookups in the test scenarios, making them more readable and maintainable. Lookups are often saved as csv files which is done under the `testcases/data/lookup_data` folder. For including a callable for the lookup or parameter, files are provided to implement the respective function under `testcases/data/gen_lookup_functions.py` for Lookups and `testcases/data/gen_parameter_functions.py` for parameters. Datasets can also be build there if needed.
+Each scenario type of BayBE is represented by a separate test case. These are collected in the `test_cases` folder where a file for each test scenario type a list of the respective test case class is provided. Here, a new entry can be added which holds the parameter for executing the simulation. For adding or reusing parameter and lookups, the folder `test_cases/data` holds dictoraries for the respective parameter in the `parameter.py` file and the lookup tables in the `lookups.py` file. The Keyes are used to reference the parameter and lookups in the test scenarios, making them more readable and maintainable. Lookups are often saved as csv files which is done under the `test_cases/data/lookup_data` folder. For including a callable for the lookup or parameter, files are provided to implement the respective function under `test_cases/data/gen_lookup_functions.py` for Lookups and `test_cases/data/gen_parameter_functions.py` for parameters. Datasets can also be build there if needed.
 
 ### Example for adding the experiment test case cell_media
 
-1. Add the lookup csv file `cell_media.csv` to the `testcases/data/lookup_data` folder
-2. Reference the lookup in the `testcases/data/lookups.py` file by adding the following line:
+1. Add the lookup csv file `cell_media.csv` to the `test_cases/data/lookup_data` folder
+2. Reference the lookup in the `test_cases/data/lookups.py` file by adding the following line:
 
     ```python
     [...]
@@ -24,7 +24,7 @@ Each scenario type of BayBE is represented by a separate test case. These are co
     ```
 
     The key string "cell_media" is used to reference the lookup in the `simulate_experiment_test.py` file.
-3. Add the parameter to the `testcases/data/parameter.py` file by adding the following line:
+3. Add the parameter to the `test_cases/data/parameter.py` file by adding the following line:
 
     ```python
     [...]
