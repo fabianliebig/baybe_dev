@@ -8,6 +8,36 @@ tox -e performancetest-py310
 
 These tests should reflect the performance of the codebase and should be used to identify performance regressions which may only visible in long running scenarios. We refer to performance in a quality oriented way, meaning that we are especially interested in the convergence behavior of the provided algorithms and strategies. The performance tests are not meant to be used for classical compute benchmarking purposes, but rather to ensure that the codebase is able to solve the given optimization problems in a consistent and reliable way. To compare the performance of different versions of the codebase properly, we store the results of the performance tests either as csv files if run locally or in a database if run on a CI system. All tests run as normal pytest parametrized tests and are executed in parallel by the pytest-xdist plugin.
 
+The following shows a basic overview of the performance test class structure. PyTest executes a function for each defined test case from a list of scenarios and stores the data with a data handler fixture.
+
+```mermaid
+classDiagram
+    direction TB
+    class PerformanceTestCase {
+        <<interface>>
+        +execute_testcase() MetaDataAndResultPerformanceTest
+        +unique_id: UUID
+        +title: str
+    }
+
+    class ResultPersistenceInterface {
+        <<interface>>
+        +date_time: datetime
+        +persist_new_result(unique_id: UUID, results: MetaDataAndResultPerformanceTest)
+        +load_compare_result(self, experiment_id: UUID) DataFrame
+    }
+
+    PerformanceTestCase <|.. SimulateScenariosTestCase
+    PerformanceTestCase <|.. SimulateExperimentTestCase
+    PerformanceTestCase <|.. SimulateTransferLearningTestCase
+
+    ResultPersistenceInterface <|.. LocalExperimentResultPersistence
+    ResultPersistenceInterface <|.. S3ExperimentResultPersistence
+
+    test_performance_test --> PerformanceTestCase : scenario
+    test_performance_test --> ResultPersistenceInterface : result_data_handler
+```
+
 ## Adding a new test case
 
 Each scenario type of BayBE is represented by a separate test case. These are collected in the `test_cases` folder where a file for each test scenario type a list of the respective test case class is provided. Here, a new entry can be added which holds the parameter for executing the simulation. For adding or reusing parameter and lookups, the folder `test_cases/data` holds dictoraries for the respective parameter in the `parameter.py` file and the lookup tables in the `lookups.py` file. The Keyes are used to reference the parameter and lookups in the test scenarios, making them more readable and maintainable. Lookups are often saved as csv files which is done under the `test_cases/data/lookup_data` folder. For including a callable for the lookup or parameter, files are provided to implement the respective function under `test_cases/data/gen_lookup_functions.py` for Lookups and `test_cases/data/gen_parameter_functions.py` for parameters. Datasets can also be build there if needed.
