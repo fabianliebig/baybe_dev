@@ -1,5 +1,7 @@
 name: Attaches a runner to your repository
 
+permissions: write-all
+
 on:
   workflow_call:
     inputs:
@@ -21,14 +23,11 @@ on:
         description: 'AWS Role ARN which must provide permissions to attach a runner to the repository (Will be provided within the documentation)'  
         required: true
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
     add-runner:
         name: Add one JIT Runner
         runs-on: ubuntu-22.04
+        permissions: write-all
         steps:
         - name: Configure AWS credentials
           uses: aws-actions/configure-aws-credentials@v4
@@ -43,7 +42,7 @@ jobs:
 
         - name: Execute Lambda function
           run: |
-            aws lambda invoke --function-name baybe_performence-tests_register_and_create_runner_container --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ secrets.GitHubToken }}", "count_container":  ${{ inputs.RunnerCount }}, "container_compute": "${{ inputs.RunnerComputeType }}", "repository": "${{ github.repository }}" }'  response.json
+            aws lambda invoke --function-name baybe_performence-tests_register_and_create_runner_container --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ github.token }}", "count_container":  ${{ inputs.RunnerCount }}, "container_compute": "${{ inputs.RunnerComputeType }}", "repository": "${{ github.repository }}" }'  response.json
             cat response.json
             if ! grep -q '"statusCode": 200' response.json; then
               echo "Lambda function failed. statusCode is not 200."
