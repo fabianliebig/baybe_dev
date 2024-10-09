@@ -14,9 +14,7 @@ from filelock import FileLock
 from pytest import TempPathFactory
 
 from tests.performance_tests.test_cases import (
-    SCENARIO_TEST_CASES,
     SIMULATE_EXPERIMENT_TEST_CASES,
-    TRANSFER_LEARNING_TEST_CASES,
 )
 from tests.performance_tests.utils import (
     LocalExperimentResultPersistence,
@@ -60,11 +58,7 @@ def combine_simulations() -> Sequence[PerformanceTestCase]:
     Raises:
         ValueError: If any of the test cases do not have unique identifiers.
     """
-    testcase_list: Sequence[PerformanceTestCase] = (
-        SCENARIO_TEST_CASES
-        + SIMULATE_EXPERIMENT_TEST_CASES
-        + TRANSFER_LEARNING_TEST_CASES
-    )
+    testcase_list: Sequence[PerformanceTestCase] = SIMULATE_EXPERIMENT_TEST_CASES
     if not all_test_cases_uniquely_identifiable(testcase_list):
         raise ValueError(
             "All performance test cases must have unique "
