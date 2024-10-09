@@ -23,8 +23,12 @@ classDiagram
     class ResultPersistenceInterface {
         <<interface>>
         +date_time: datetime
-        +persist_new_result(unique_id: UUID, results: MetaDataAndResultPerformanceTest)
+        +persist_new_result(unique_id: str, results: MetaDataAndResultPerformanceTest)
         +load_compare_result(self, experiment_id: UUID) DataFrame
+    }
+
+    class PyTest {
+        test_performance_test()
     }
 
     PerformanceTestCase <|.. SimulateScenariosTestCase
@@ -34,13 +38,13 @@ classDiagram
     ResultPersistenceInterface <|.. LocalExperimentResultPersistence
     ResultPersistenceInterface <|.. S3ExperimentResultPersistence
 
-    test_performance_test --> PerformanceTestCase : scenario
-    test_performance_test --> ResultPersistenceInterface : result_data_handler
+    PyTest --> PerformanceTestCase : scenario
+    PyTest --> ResultPersistenceInterface : result_data_handler
 ```
 
 ## Adding a new test case
 
-Each scenario type of BayBE is represented by a separate test case. These are collected in the `test_cases` folder where a file for each test scenario type a list of the respective test case class is provided. Here, a new entry can be added which holds the parameter for executing the simulation. For adding or reusing parameter and lookups, the folder `test_cases/data` holds dictoraries for the respective parameter in the `parameter.py` file and the lookup tables in the `lookups.py` file. The Keyes are used to reference the parameter and lookups in the test scenarios, making them more readable and maintainable. Lookups are often saved as csv files which is done under the `test_cases/data/lookup_data` folder. For including a callable for the lookup or parameter, files are provided to implement the respective function under `test_cases/data/gen_lookup_functions.py` for Lookups and `test_cases/data/gen_parameter_functions.py` for parameters. Datasets can also be build there if needed.
+Each scenario type of BayBE is represented by a separate test case. These are collected in the `test_cases` folder where a file for each test scenario type a list of the respective test case class is provided. Here, a new entry can be added which holds the parameter for executing the simulation. For adding or reusing parameter and lookups, the folder `test_cases/data` holds dictionaries for the respective parameter in the `parameter.py` file and the lookup tables in the `lookups.py` file. The Keyes are used to reference the parameter and lookups in the test scenarios, making them more readable and maintainable. Lookups are often saved as csv files which is done under the `test_cases/data/lookup_data` folder. For including a callable for the lookup or parameter, files are provided to implement the respective function under `test_cases/data/gen_lookup_functions.py` for Lookups and `test_cases/data/gen_parameter_functions.py` for parameters. Datasets can also be build there if needed.
 
 ### Example for adding the experiment test case cell_media
 
@@ -133,7 +137,7 @@ Each scenario type of BayBE is represented by a separate test case. These are co
 
 ## Persisting test results
 
-For persisting the test result in the CI/CD, currently a S3-Bucket name is used. This name must be set in the environment variable `BAYBE_PERFORMANCE_PERSISTANCE_PATH` in the CI/CD system. The test results are stored under the key `UUID/BRANCH_NAME/BAYBE_VERSION/DATE_TIME_ISO/COMMIT_HASH` as a csv file. The created S3 entry contains information like the batch size and the number of DOE iterations, but also the execution time and the title of the test case. If the environment variable is not set, the test results are stored locally in the `tests/performance_tests/results` folder. The test results are stored as csv files with the name `UUID-BAYBE_VERSION-DATE_TIME_ISO.csv` without additional metadata.
+For persisting the test result in the CI/CD, currently a S3-Bucket name is used. This name must be set in the environment variable `BAYBE_PERFORMANCE_PERSISTANCE_PATH` in the CI/CD system. The test results are stored under the key `ORG_STARTING_WORKFLOW/UUID/BRANCH_NAME/BAYBE_VERSION/DATE_TIME_ISO/COMMIT_HASH` as a csv file. The created S3 entry contains information like the batch size and the number of DOE iterations, but also the execution time and the title of the test case. If the environment variable is not set, the test results are stored locally in the `tests/performance_tests/results` folder. The test results are stored as csv files with the name `UUID-BAYBE_VERSION-DATE_TIME_ISO.csv` without additional metadata.
 
 ### How test results are loaded
 

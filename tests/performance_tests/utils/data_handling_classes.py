@@ -90,12 +90,40 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             raise ValueError("The environment variable GITHUB_SHA is not set.")
         return os.environ["GITHUB_SHA"]
 
+    @staticmethod
+    def _default_repository_owner_org() -> str:
+        if "GITHUB_REPOSITORY_OWNER" not in os.environ:
+            raise ValueError(
+                "The environment variable GITHUB_REPOSITORY_OWNER is not set."
+            )
+        return os.environ["GITHUB_REPOSITORY_OWNER"]
+
+    @staticmethod
+    def _default_actor_initiated_workflow() -> str:
+        if "GITHUB_ACTOR" not in os.environ:
+            raise ValueError("The environment variable GITHUB_ACTOR is not set.")
+        return os.environ["GITHUB_ACTOR"]
+
     bucket_name: str = field(factory=_default_bucket_name)
     """The name of the S3 bucket where the results are stored."""
+
     _object_session = boto3.session.Session()
+    """The boto3 session object."""
+
     branch: str = field(factory=_default_branch)
     """The branch of the Baybe library from which the workflow was started."""
+
     commit_hash: str = field(factory=_default_commit_hash)
+    """The commit hash from the last commit where the workflow is started."""
+
+    repository_owner_org: str = field(factory=_default_repository_owner_org)
+    """The owner of the repository where the workflow is started. Might be a fork."""
+
+    actor_initiated_workflow: str = field(factory=_default_actor_initiated_workflow)
+    """The actor who initiated the workflow. It stays the same for a rerun."""
+
+    _RELEVANT_OWNER_ORG_FOR_SEARCH = "emdgroup"
+    """The repository owner organization that is used for fetching results."""
 
     def persist_new_result(
         self, experiment_id: UUID, result: MetaDataAndResultPerformanceTest
@@ -108,12 +136,14 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         """
         client = self._object_session.client("s3")
         bucket_path = (
-            f"{experiment_id}/"
-            f"{self.branch}/{self.baybe_version}/{self.date_time.isoformat()}/{self.commit_hash}"
+            f"{self.repository_owner_org}/{experiment_id}/"
+            + f"{self.branch}/{self.baybe_version}/"
+            + f"{self.date_time.isoformat()}/{self.commit_hash}"
         )
 
         metadata = result.to_s3_dict()
         metadata["date_time"] = self.date_time.isoformat()
+        metadata["workflow_actor"] = self.actor_initiated_workflow
 
         client.put_object(
             Bucket=self.bucket_name,
@@ -184,7 +214,8 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         client = self._object_session.client("s3")
         paginator = client.get_paginator("list_objects_v2")
         page_iterator = paginator.paginate(
-            Bucket=self.bucket_name, Prefix=f"{experiment_id}/main"
+            Bucket=self.bucket_name,
+            Prefix=f"{self._RELEVANT_OWNER_ORG_FOR_SEARCH}/{experiment_id}/main",
         )
         map_of_versions: dict[str, list[str]] = self._extract_baybe_versions(
             page_iterator
@@ -251,7 +282,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         last_available_release = self._get_last_available_release(experiment_id)
         page_iterator = paginator.paginate(
             Bucket=self.bucket_name,
-            Prefix=f"{experiment_id}/main/{last_available_release}",
+            Prefix=f"{self._RELEVANT_OWNER_ORG_FOR_SEARCH}/{experiment_id}/main/{last_available_release}",
         )
         oldest_object = self._get_newest_s3_object(page_iterator)
 
@@ -285,7 +316,8 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         client = self._object_session.client("s3")
         paginator = client.get_paginator("list_objects_v2")
         page_iterator = paginator.paginate(
-            Bucket=self.bucket_name, Prefix=f"{experiment_id}/main"
+            Bucket=self.bucket_name,
+            Prefix=f"{self._RELEVANT_OWNER_ORG_FOR_SEARCH}/{experiment_id}/main",
         )
         oldest_object = self._get_newest_s3_object(page_iterator)
 
