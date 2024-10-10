@@ -15,8 +15,8 @@ from pandas import DataFrame
 from sortedcontainers import SortedDict, SortedList
 
 from baybe import __version__
-from tests.performance_tests.utils.testcases_classes import (
-    MetaDataAndResultPerformanceTest,
+from performance_tests.utils.testcases_classes import (
+    BenchmarkingResult,
 )
 
 
@@ -33,13 +33,10 @@ class ResultPersistenceInterface(ABC):
     """The version of the Baybe library."""
 
     @abstractmethod
-    def persist_new_result(
-        self, experiment_id: UUID, result: MetaDataAndResultPerformanceTest
-    ) -> None:
-        """Persists a new result for the given experiment.
+    def persist_new_result(self, result: BenchmarkingResult) -> None:
+        """Store the result of a performance test.
 
         Args:
-            experiment_id: The ID of the experiment.
             result: The result to be persisted.
         """
         pass
@@ -91,14 +88,6 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         return os.environ["GITHUB_SHA"]
 
     @staticmethod
-    def _default_repository_owner_org() -> str:
-        if "GITHUB_REPOSITORY_OWNER" not in os.environ:
-            raise ValueError(
-                "The environment variable GITHUB_REPOSITORY_OWNER is not set."
-            )
-        return os.environ["GITHUB_REPOSITORY_OWNER"]
-
-    @staticmethod
     def _default_actor_initiated_workflow() -> str:
         if "GITHUB_ACTOR" not in os.environ:
             raise ValueError("The environment variable GITHUB_ACTOR is not set.")
@@ -116,29 +105,24 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
     commit_hash: str = field(factory=_default_commit_hash)
     """The commit hash from the last commit where the workflow is started."""
 
-    repository_owner_org: str = field(factory=_default_repository_owner_org)
-    """The owner of the repository where the workflow is started. Might be a fork."""
-
     actor_initiated_workflow: str = field(factory=_default_actor_initiated_workflow)
     """The actor who initiated the workflow. It stays the same for a rerun."""
 
     _RELEVANT_OWNER_ORG_FOR_SEARCH = "emdgroup"
     """The repository owner organization that is used for fetching results."""
 
-    def persist_new_result(
-        self, experiment_id: UUID, result: MetaDataAndResultPerformanceTest
-    ) -> None:
-        """Persists a new result for the given experiment.
+    def persist_new_result(self, result: BenchmarkingResult) -> None:
+        """Store the result of a performance test.
 
         Args:
-            experiment_id: The ID of the experiment.
             result: The result to be persisted.
         """
+        experiment_id = result.unique_id
         client = self._object_session.client("s3")
         bucket_path = (
-            f"{self.repository_owner_org}/{experiment_id}/"
-            + f"{self.branch}/{self.baybe_version}/"
-            + f"{self.date_time.isoformat()}/{self.commit_hash}"
+            f"{experiment_id}/"
+            + f"{self.baybe_version}/{self.branch}/"
+            + f"{self.commit_hash}/{self.date_time.isoformat()}"
         )
 
         metadata = result.to_s3_dict()
@@ -154,7 +138,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         )
 
     def _get_newest_s3_object(self, iterator: PageIterator) -> dict:
-        """Retrieves the oldest S3 object from the given iterator.
+        """Retrieve the oldest S3 object from the given iterator.
 
         Args:
             iterator: An iterator that provides access to S3 objects.
@@ -200,7 +184,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         return self._get_current_main_newest_result(experiment_id)
 
     def _get_last_available_release(self, experiment_id: UUID) -> str:
-        """Retrieves the last available release for a given experiment ID.
+        """Retrieve the last available release for a given experiment ID.
 
         Parameters:
             experiment_id: The ID of the experiment.
@@ -233,7 +217,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
     def _extract_baybe_versions(
         self, page_iterator: PageIterator
     ) -> dict[str, list[str]]:
-        """Extracts the Baybe versions from the given page iterator.
+        """Extract the Baybe versions from the given page iterator.
 
         Args:
             page_iterator: An iterator that provides pages.
@@ -247,7 +231,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
             if "Contents" in page:
                 for key in page["Contents"]:
                     key_str = key["Key"]
-                    baybe_version = key_str.split("/")[2]
+                    baybe_version = key_str.split("/")[1]
                     san_baybe_version = self._sanitize_baybe_version(baybe_version)
                     if baybe_version not in map_of_versions:
                         map_of_versions[san_baybe_version] = SortedList()
@@ -269,7 +253,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         return baybe_version
 
     def _get_newest_dataset_from_last_release(self, experiment_id: UUID) -> DataFrame:
-        """Retrieves the newest dataset from the release just before the current one.
+        """Retrieve the newest dataset from the release just before the current one.
 
         Args:
             experiment_id: The ID of the experiment.
@@ -290,7 +274,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         return self._retrieve_dataframe_from_s3(key)
 
     def _retrieve_dataframe_from_s3(self, key: str) -> DataFrame:
-        """Retrieves a DataFrame from an S3 bucket.
+        """Retrieve a DataFrame from an S3 bucket.
 
         Parameters:
             key: The key of the object in the S3 bucket.
@@ -305,7 +289,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         return pandas.read_csv(csv_data)
 
     def _get_current_main_newest_result(self, experiment_id: UUID) -> DataFrame:
-        """Retrieves the newest dataset from the last release for a experiment.
+        """Retrieve the newest dataset from the last release for a experiment.
 
         Args:
             experiment_id: The ID of the experiment.
@@ -329,20 +313,18 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
 class LocalExperimentResultPersistence(ResultPersistenceInterface):
     """Class for persisting experiment results locally."""
 
-    _path: str = "tests/performance_tests/results"
+    _path: str = "results"
 
     def __attrs_post_init__(self):
         os.makedirs(self._path, exist_ok=True)
 
-    def persist_new_result(
-        self, experiment_id: UUID, result: MetaDataAndResultPerformanceTest
-    ) -> None:
-        """Persists a new result for the given experiment.
+    def persist_new_result(self, result: BenchmarkingResult) -> None:
+        """Persist a new result for the given experiment.
 
         Args:
-            experiment_id: The ID of the experiment.
             result: The result to be persisted.
         """
+        experiment_id = result.unique_id
         result.result.to_csv(
             f"{self._path}/{experiment_id}-{self.date_time.isoformat}-{self.baybe_version}.csv"
         )
