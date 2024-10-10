@@ -108,9 +108,6 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
     actor_initiated_workflow: str = field(factory=_default_actor_initiated_workflow)
     """The actor who initiated the workflow. It stays the same for a rerun."""
 
-    _RELEVANT_OWNER_ORG_FOR_SEARCH = "emdgroup"
-    """The repository owner organization that is used for fetching results."""
-
     def persist_new_result(self, result: BenchmarkingResult) -> None:
         """Store the result of a performance test.
 
@@ -120,8 +117,8 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         experiment_id = result.unique_id
         client = self._object_session.client("s3")
         bucket_path = (
-            f"{experiment_id}/"
-            + f"{self.baybe_version}/{self.branch}/"
+            f"{experiment_id}"
+            + f"/{self.branch}/{self.baybe_version}"
             + f"{self.commit_hash}/{self.date_time.isoformat()}"
         )
 
@@ -199,7 +196,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         paginator = client.get_paginator("list_objects_v2")
         page_iterator = paginator.paginate(
             Bucket=self.bucket_name,
-            Prefix=f"{self._RELEVANT_OWNER_ORG_FOR_SEARCH}/{experiment_id}/main",
+            Prefix=f"{experiment_id}/main",
         )
         map_of_versions: dict[str, list[str]] = self._extract_baybe_versions(
             page_iterator
@@ -266,7 +263,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         last_available_release = self._get_last_available_release(experiment_id)
         page_iterator = paginator.paginate(
             Bucket=self.bucket_name,
-            Prefix=f"{self._RELEVANT_OWNER_ORG_FOR_SEARCH}/{experiment_id}/main/{last_available_release}",
+            Prefix=f"{experiment_id}/main/{last_available_release}",
         )
         oldest_object = self._get_newest_s3_object(page_iterator)
 
@@ -301,7 +298,7 @@ class S3ExperimentResultPersistence(ResultPersistenceInterface):
         paginator = client.get_paginator("list_objects_v2")
         page_iterator = paginator.paginate(
             Bucket=self.bucket_name,
-            Prefix=f"{self._RELEVANT_OWNER_ORG_FOR_SEARCH}/{experiment_id}/main",
+            Prefix=f"{experiment_id}/main",
         )
         oldest_object = self._get_newest_s3_object(page_iterator)
 
