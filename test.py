@@ -99,8 +99,8 @@ def test_case_aryl_halides() -> DataFrame:
     )
     lookup_aryl_halides = read_csv(PATH_PREFIX.joinpath("aryl_halides.csv").resolve())
     batch_size = 2
-    n_doe_iterations = 5
-    n_mc_iterations = 20
+    n_doe_iterations = 40
+    n_mc_iterations = 200
 
     scenarios = {"Mordred Encoding": campaign, "Random Baseline": campaign_rand}
     return simulate_scenarios(
@@ -117,10 +117,11 @@ if __name__ == "__main__":
     title = "Aryl Halides Simulation maximum yield with Mordred"
     unique_id = UUID("23df40f6-243c-49ca-ae71-81d733d8a88d")
     metadata = {
-        "DOE iterations": "5",
+        "DOE iterations": "40",
         "batch size": "2",
-        "n_mc_iterations": "2",
+        "n_mc_iterations": "200",
         "title": title,
+        "impute_mode": "ignore"
     }
     lookup_aryl_halides = read_csv(PATH_PREFIX.joinpath("aryl_halides.csv").resolve())
 
