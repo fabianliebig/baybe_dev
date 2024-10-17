@@ -117,9 +117,9 @@ if __name__ == "__main__":
     title = "Aryl Halides Simulation maximum yield with Mordred"
     unique_id = UUID("23df40f6-243c-49ca-ae71-81d733d8a88d")
     metadata = {
-        "DOE iterations": 5,
-        "batch size": 2,
-        "n_mc_iterations": 2,
+        "DOE iterations": "5",
+        "batch size": "2",
+        "n_mc_iterations": "2",
         "title": title,
     }
     lookup_aryl_halides = read_csv(PATH_PREFIX.joinpath("aryl_halides.csv").resolve())
