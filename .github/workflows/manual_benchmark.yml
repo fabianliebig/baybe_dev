@@ -1,0 +1,25 @@
+name: Manual Benchmark
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  add-runner:
+    uses: ./.github/workflow_templates/runner_attach_workflow.yml
+    with:
+      RunnerCount: 1
+      RunnerComputeType: "S"
+    secrets:
+      GitHubToken: ${{ secrets.RUNNER_ATTACH_API_KEY }}
+      AWSRoleToAssume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+    
+  run-test-benchmark:
+    needs: add-runner
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run benchmark
+        run: python3 test.py
