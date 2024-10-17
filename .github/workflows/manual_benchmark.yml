@@ -1,25 +1,41 @@
-name: Manual Benchmark
+name: Manuell Benchmark
+
 on:
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
   id-token: write
 
 jobs:
-  add-runner:
-    uses: ./.github/workflow_templates/runner_attach_workflow.yml
-    with:
-      RunnerCount: 1
-      RunnerComputeType: "S"
-    secrets:
-      GitHubToken: ${{ secrets.RUNNER_ATTACH_API_KEY }}
-      AWSRoleToAssume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-    
-  run-test-benchmark:
-    needs: add-runner
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run benchmark
-        run: python3 test.py
+    add-runner:
+      uses: ./.github/workflows/runner_attach_workflow.yml
+      with:
+        RunnerCount: 1
+        RunnerComputeType: "M"
+      secrets:
+        GitHubToken: ${{ secrets.RUNNER_ATTACH_API_KEY }}
+        AWSRoleToAssume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
+    benchmark-test:
+      needs: add-runner
+      runs-on: self-hosted
+      env:
+        BAYBE_PERFORMANCE_PERSISTANCE_PATH: ${{ secrets.TEST_RESULT_S3_BUCKET }}
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - uses: actions/setup-python@v5
+          id: setup-python
+          with:
+            python-version: '3.10'
+        - name: Benchmark
+          run: |
+            pip install '.[dev]'
+            pip install boto3==1.18.63
+            python test.py
