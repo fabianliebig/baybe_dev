@@ -139,6 +139,6 @@ if __name__ == "__main__":
     )
     result = benchmark.execute_benchmark()
     persister = S3ExperimentResultPersistence(
-        datetime.now(), branch="main", baybe_version="0.1.0"
+        datetime.now(), branch="main", baybe_version="0.2.0"
     )
     persister.persist_new_result(result)
