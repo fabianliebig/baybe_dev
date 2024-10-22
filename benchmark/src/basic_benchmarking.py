@@ -37,7 +37,10 @@ class SingleExecutionBenchmark(Benchmark):
         return self._benchmark_result
 
     def get_result(self) -> SingleResult:
-        """Return the single result of the benchmark."""
+        """Return the single result of the benchmark.
+
+        Will run the benchmark if it has not been executed yet.
+        """
         if not self._benchmark_result:
             self._benchmark_result = self.execute_benchmark()
         return self._benchmark_result

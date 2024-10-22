@@ -13,7 +13,7 @@ class SingleResult(Result):
     """A single result of the benchmarking."""
 
     benchmark_result: DataFrame
-    """The result of the benchmarking."""
+    """The result of the benchmarked callable."""
 
     execution_time_ns: int
     """The execution time of the benchmark in nanoseconds."""

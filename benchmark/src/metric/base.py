@@ -48,21 +48,3 @@ class Metric(ABC):
             values: The dictionary containing the scenario names and their values.
         """
         pass
-
-
-@define
-class NormalizationInterface(ABC):
-    """Interface for normalization."""
-
-    @abstractmethod
-    def _normalize_data(self, data: DataFrame, index_name: str) -> DataFrame:
-        """Normalize the given data to scale the metric to [0,1].
-
-        Args:
-            data: The data to be normalized.
-            index_name: The name of the index to be used for normalization.
-
-        Returns:
-            DataFrame: The normalized data.
-        """
-        pass

@@ -18,9 +18,6 @@ from benchmark.src import SingleExecutionBenchmark
 def lookup_synthetic_3(*args) -> float:
     """Synthetic dataset. Hand-crafted by Alexander Hopp.
 
-    ================================================================================
-                                        Summary
-    --------------------------------------------------------------------------------
         Number of Samples            inf
         Dimensionality                 3
         Features:
@@ -29,7 +26,6 @@ def lookup_synthetic_3(*args) -> float:
             z   discrete {1,2,3,4}
         Targets:
             output   continuous
-    ================================================================================
     Best Value 4.09685
     """
     (x, y, z) = args
@@ -88,7 +84,7 @@ def synthetic_3() -> tuple[DataFrame, dict[str, str]]:
 
 
 benchmark_synthetic_3 = SingleExecutionBenchmark(
-    title="Synthetic dataset. Hand-crafted by Alexander Hopp.",
+    title="Synthetic dataset. Three dimensional.",
     identifier=UUID("4e131cb7-4de0-4900-b993-1d7d4a194532"),
     benchmark_function=synthetic_3,
 )

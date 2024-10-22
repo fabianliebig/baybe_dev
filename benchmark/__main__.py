@@ -15,7 +15,6 @@ def main():
     This function runs the performance test cases defined in the domain module
     in parallel. The function uses the number of cores available on the machine
     to create a reasonable number of workers for the execution.
-    The results of the benchmarks are persisted to the file system or S3.
     """
     num_cores = os.cpu_count()
     with concurrent.futures.ProcessPoolExecutor(max_workers=num_cores) as executor:
