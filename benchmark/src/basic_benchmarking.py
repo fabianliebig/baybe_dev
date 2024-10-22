@@ -32,8 +32,6 @@ class SingleExecutionBenchmark(Benchmark):
         self._benchmark_result = SingleResult(
             self.title, self.identifier, self._metadata, result, time_delta
         )
-        for metric in self.metrics:
-            self._benchmark_result.evaluate_result(metric, self.objective_scenarios)
         return self._benchmark_result
 
     def get_result(self) -> SingleResult:
