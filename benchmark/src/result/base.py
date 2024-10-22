@@ -5,7 +5,6 @@ from typing import Any
 from uuid import UUID
 
 from attrs import define, field
-from matplotlib.figure import Figure, SubFigure
 
 from benchmark.src.metric import Metric
 
@@ -40,18 +39,6 @@ class Result(ABC):
     @abstractmethod
     def get_execution_time_ns(self) -> float:
         """Return the execution time of the benchmark in nanoseconds."""
-        pass
-
-    @abstractmethod
-    def create_convergence_plot(self) -> Figure | SubFigure:
-        """Generate a plot of the benchmarking result.
-
-        The function will create a mathplotlib figure or subfigure
-        from the benchmarking result. The function assumes that the
-        result contains a column with the name `Num_Experiments`, a
-        column with the name `Scenario`, and that the last column
-        contains the best found value over the experiments.
-        """
         pass
 
     @abstractmethod
