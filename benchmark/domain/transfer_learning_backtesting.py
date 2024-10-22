@@ -22,9 +22,9 @@ from benchmark.src import SingleExecutionBenchmark
 
 def backtestin_tranfer_learning() -> tuple[pd.DataFrame, dict[str, str]]:
     """Backtesting transfer learning from BayBE's docs."""
-    batch_size = 3
-    n_doe_iterations = 25
-    n_mc_iterations = 50
+    batch_size = 2
+    n_doe_iterations = 3
+    n_mc_iterations = 3
     DIMENSION = 3
     POINTS_PER_DIM = 7
 

@@ -63,9 +63,9 @@ def synthetic_3() -> tuple[DataFrame, dict[str, str]]:
         objective=objective,
     )
 
-    batch_size = 5
-    n_doe_iterations = 30
-    n_mc_iterations = 50
+    batch_size = 2
+    n_doe_iterations = 3
+    n_mc_iterations = 3
 
     metadata = {
         "DOE_iterations": str(n_doe_iterations),

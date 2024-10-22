@@ -108,9 +108,9 @@ def direct_arylation() -> tuple[DataFrame, dict[str, str]]:
     lookup_direct_arylation = read_csv(
         PATH_PREFIX.joinpath("direct_arylation.csv").resolve()
     )
-    batch_size = 3
-    n_doe_iterations = 25
-    n_mc_iterations = 50
+    batch_size = 2
+    n_doe_iterations = 3
+    n_mc_iterations = 3
 
     metadata = {
         "DOE_iterations": str(n_doe_iterations),
