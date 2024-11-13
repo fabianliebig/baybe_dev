@@ -53,4 +53,5 @@ jobs:
           python-version: "3.10"
       - name: Benchmark
         run: |
-          pip install '.[dev]'
+          pip install '.[benchmarking]'
+          python -m benchmarks
