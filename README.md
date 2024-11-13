@@ -7,6 +7,7 @@
 
 [![Supports Python](https://img.shields.io/pypi/pyversions/baybe?style=flat-square&label=Supports%20Python&labelColor=96d7d2&color=ffdcb9)](https://pypi.org/project/baybe/)
 [![PyPI version](https://img.shields.io/pypi/v/baybe.svg?style=flat-square&label=PyPI%20Version&labelColor=96d7d2&color=ffdcb9)](https://pypi.org/project/baybe/)
+[![Downloads](https://img.shields.io/pypi/dm/baybe?style=flat-square&label=Downloads&labelColor=96d7d2&color=ffdcb9)](https://pypistats.org/packages/baybe)
 [![Issues](https://img.shields.io/github/issues/emdgroup/baybe?style=flat-square&label=Issues&labelColor=96d7d2&color=ffdcb9)](https://github.com/emdgroup/baybe/issues/)
 [![PRs](https://img.shields.io/github/issues-pr/emdgroup/baybe?style=flat-square&label=PRs&labelColor=96d7d2&color=ffdcb9)](https://github.com/emdgroup/baybe/pulls/)
 [![License](https://shields.io/badge/License-Apache%202.0-green.svg?style=flat-square&labelColor=96d7d2&color=ffdcb9)](http://www.apache.org/licenses/LICENSE-2.0)
@@ -113,7 +114,7 @@ parameters = [
             "Solvent C": "O",
             "Solvent D": "CS(=O)C",
         },
-        encoding="MORDRED",  # chemical encoding via mordred package
+        encoding="MORDRED",  # chemical encoding via scikit-fingerprints
     ),
 ]
 ```
@@ -298,6 +299,7 @@ The available groups are:
 - `polars`: Required for optimized search space construction via [Polars](https://docs.pola.rs/)
 - `simulation`: Enabling the [simulation](https://emdgroup.github.io/baybe/stable/_autosummary/baybe.simulation.html) module.
 - `test`: Required for running the tests.
+- `benchmarking`: Required for running the benchmarking module.
 - `dev`: All of the above plus `tox` and `pip-audit`. For code contributors.
 
 ## 📡 Telemetry

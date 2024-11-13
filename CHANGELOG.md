@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - `allow_missing` and `allow_extra` keyword arguments to `Objective.transform`
+- Example for a traditional mixture
+- `add_noise_to_perturb_degenerate_rows` utility
+- `benchmarks` subpackage for defining and running performance tests
+
+### Changed
+- `SubstanceParameter` encodings are now computed exclusively with the
+  `scikit-fingerprints` package, granting access to all fingerprints available therein
+- Example for slot-based mixtures has been revised and grouped together with the new 
+  traditional mixture example
+- Memory caching is now non-verbose
+- `CustomDiscreteParameter` does not allow duplicated rows in `data` anymore
+
+### Fixed
+- Rare bug arising from degenerate `SubstanceParameter.comp_df` rows that caused
+  wrong number of recommendations being returned
 
 ### Deprecations
 - Passing a dataframe via the `data` argument to `Objective.transform` is no longer
@@ -16,6 +31,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `get_transform_parameters` has been replaced with `get_transform_objects`
 - Passing a dataframe via the `data` argument to `Target.transform` is no longer
   possible. The data must now be passed as a series as first positional argument.
+- `SubstanceEncoding` value `MORGAN_FP`. As a replacement, `ECFP` with 1024 bits and
+  radius of 4 can be used.
+- `SubstanceEncoding` value `RDKIT`. As a replacement, `RDKIT2DDESCRIPTORS` can be used.
+
+## [0.11.3] - 2024-11-06
+### Fixed
+- `protobuf` dependency issue, version pin was removed
 
 ## [0.11.2] - 2024-10-11
 ### Added
