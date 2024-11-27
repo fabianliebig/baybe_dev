@@ -1,19 +1,27 @@
 """Executes the benchmarking module."""
 # Run this via 'python -m benchmarks' from the root directory.
 
+import os
+
 from benchmarks.domains import BENCHMARKS
-from benchmarks.persistence import make_object_writer, make_path_constructor
+from benchmarks.persistence import (
+    LocalFileObjectStorage,
+    PathConstructor,
+    S3ObjectStorage,
+)
+
+RUNS_IN_CI = "CI" in os.environ
 
 
 def main():
     """Run all benchmarks."""
-    persistence_handler = make_object_writer()
-
     for benchmark in BENCHMARKS:
         result = benchmark()
-        path_constructor = make_path_constructor(benchmark, result)
+        path_constructor = PathConstructor.from_result(result)
         persist_dict = benchmark.to_dict() | result.to_dict()
-        persistence_handler.write_json(persist_dict, path_constructor)
+
+        object_storage = S3ObjectStorage() if RUNS_IN_CI else LocalFileObjectStorage()
+        object_storage.write_json(persist_dict, path_constructor)
 
 
 if __name__ == "__main__":
