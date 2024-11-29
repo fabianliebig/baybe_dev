@@ -11,7 +11,6 @@ jobs:
 
 
   benchmark-test:
-    needs: add-runner
     runs-on: self-hosted
     env:
       BAYBE_BENCHMARKING_PERSISTENCE_PATH: ${{ secrets.TEST_RESULT_S3_BUCKET }}
