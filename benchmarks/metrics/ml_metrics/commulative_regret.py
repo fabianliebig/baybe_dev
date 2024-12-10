@@ -5,11 +5,12 @@ from attrs.validators import instance_of
 from pandas import DataFrame
 from typing_extensions import override
 
-from benchmarks.metrics.base import Metric
+from baybe.targets.enum import TargetMode
+from benchmarks.metrics.base import ValueMetric
 
 
 @define
-class CumulativeRegret(Metric):
+class CumulativeRegret(ValueMetric):
     """Simple Regret metric."""
 
     lookup: DataFrame | tuple[float, float] = field(
@@ -17,6 +18,9 @@ class CumulativeRegret(Metric):
     )
     """The lookup table or function to evaluate the goal orientation
     metric and compare the best included result."""
+
+    objective_name: TargetMode = field(validator=instance_of(TargetMode))
+    """The name of the objective to evaluate."""
 
     _max_value_y: float = field(init=False, validator=instance_of(float))
     """The maximum value in the lookup table or function."""
@@ -53,7 +57,12 @@ class CumulativeRegret(Metric):
         grouped_data = data.groupby(self.doe_iteration_header)
         mean_values = grouped_data[self.to_evaluate_row_header].mean()
         cumulative_regret = 0
+        compare_value = (
+            self._max_value_y
+            if self.objective_name is TargetMode.MAX
+            else self._min_value_y
+        )
         for _, value in mean_values.items():
-            cumulative_regret += abs(self._max_value_y - value)
+            cumulative_regret += abs(compare_value - value)
 
         return cumulative_regret

@@ -6,11 +6,11 @@ from attrs.validators import instance_of
 from pandas import DataFrame
 from typing_extensions import override
 
-from benchmarks.metrics.base import Metric
+from benchmarks.metrics.base import ValueMetric
 
 
 @define
-class AreaUnderTheCurve(Metric):
+class AreaUnderTheCurve(ValueMetric):
     """Area Under the Curve (AUC) metric."""
 
     @override
@@ -91,7 +91,5 @@ class NormalizedAreaUnderTheCurve(AreaUnderTheCurve):
         Returns:
             float: The computed normalized AUC value.
         """
-        normalized_y_dataframe = self._normalize_data(
-            data, self.to_evaluate_row_header
-        )
+        normalized_y_dataframe = self._normalize_data(data, self.to_evaluate_row_header)
         return super().evaluate(normalized_y_dataframe)

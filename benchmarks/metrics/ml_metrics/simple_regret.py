@@ -6,11 +6,12 @@ from attrs.validators import instance_of
 from pandas import DataFrame
 from typing_extensions import override
 
-from benchmarks.metrics.base import Metric
+from baybe.targets.enum import TargetMode
+from benchmarks.metrics.base import ValueMetric
 
 
 @define
-class SimpleRegret(Metric):
+class SimpleRegret(ValueMetric):
     """Simple Regret metric."""
 
     lookup: DataFrame | tuple[float, float] = field(
@@ -24,6 +25,9 @@ class SimpleRegret(Metric):
 
     _min_value_y: float = field(init=False, validator=instance_of(float))
     """The minimum value in the lookup table or function."""
+
+    object: TargetMode = field(validator=instance_of(TargetMode))
+    """The name of the objective to evaluate."""
 
     @_max_value_y.default
     def _max_value_y_default(self) -> float:
@@ -51,6 +55,11 @@ class SimpleRegret(Metric):
         Returns:
             float: The computed AUC value.
         """
+        if self.object == TargetMode.MIN:
+            min_found = data[self.to_evaluate_row_header].min()
+            simple_regret = abs(self._max_value_y - min_found)
+            return simple_regret
+
         max_found = data[self.to_evaluate_row_header].max()
         simple_regret = abs(self._max_value_y - max_found)
         return simple_regret

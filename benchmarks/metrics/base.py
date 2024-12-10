@@ -1,6 +1,7 @@
 """Base classes for benchmarking metrics."""
 
 from abc import ABC, abstractmethod
+from typing import Protocol
 
 from attrs import define, field
 from attrs.validators import instance_of
@@ -8,16 +9,8 @@ from pandas import DataFrame
 
 
 @define
-class Metric(ABC):
+class Metric(Protocol):
     """Abstract base class for all benchmarking metrics."""
-
-    doe_iteration_header: str = field(default="Iterations", validator=instance_of(str))
-    """The name of the column in the DataFrame that
-    contains the number of iterations."""
-
-    to_evaluate_row_header: str = field(validator=instance_of(str))
-    """The name of the column in the DataFrame that
-    contains the values to evaluate."""
 
     @abstractmethod
     def evaluate(self, data: DataFrame) -> float:
@@ -32,3 +25,31 @@ class Metric(ABC):
         """
         pass
 
+
+@define
+class ValueMetric(Metric, ABC):
+    """Abstract base class for all regret metrics."""
+
+    doe_iteration_header: str = field(
+        default="Iteration", validator=instance_of(str), kw_only=True
+    )
+    """The name of the column in the DataFrame that
+    contains the number of iterations."""
+
+    to_evaluate_row_header: str = field(validator=instance_of(str))
+    """The name of the column in the DataFrame that
+    contains the values to evaluate."""
+
+
+@define
+class GeometricMetric(Metric, ABC):
+    """Abstract base class for all geometric metrics."""
+
+    used_input_column_header: str = field(validator=instance_of(str))
+    """The name of the column in the DataFrame that contains the input values
+    of the objective function for the given iteration."""
+    doe_iteration_header: str = field(
+        default="Iteration", validator=instance_of(str), kw_only=True
+    )
+    """The name of the column in the DataFrame that
+    contains the number of iterations."""
