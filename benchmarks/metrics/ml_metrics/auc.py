@@ -23,16 +23,15 @@ class AreaUnderTheCurve(ValueMetric):
         Returns:
             float: The computed AUC value.
         """
-        auc = 0
         iter_group = data.groupby(self.doe_iteration_header)
+        x = []
+        y = []
+        for group_key, observed_group in iter_group:
+            y.append(observed_group[self.to_evaluate_row_header].values.mean())
+            x.append(group_key)
+        auc = np.trapz(x, y)
 
-        for group_key in iter_group.group_keys:
-            observed_group = iter_group.get_group(group_key)
-            y = observed_group[self.to_evaluate_row_header].values.mean()
-            x = group_key
-            auc += np.trapz(y, x) / (max(x) - min(x))
-
-        return auc
+        return abs(auc)
 
 
 @define

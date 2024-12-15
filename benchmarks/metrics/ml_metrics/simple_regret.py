@@ -14,36 +14,11 @@ from benchmarks.metrics.base import ValueMetric
 class SimpleRegret(ValueMetric):
     """Simple Regret metric."""
 
-    lookup: DataFrame | tuple[float, float] = field(
-        validator=instance_of((DataFrame, tuple))
-    )
-    """The lookup table or function to evaluate the goal orientation
-    metric and compare the best included result."""
+    best_value: float = field(validator=instance_of(float))
+    """Best value to compare the result with."""
 
-    _max_value_y: float = field(init=False, validator=instance_of(float))
-    """The maximum value in the lookup table or function."""
-
-    _min_value_y: float = field(init=False, validator=instance_of(float))
-    """The minimum value in the lookup table or function."""
-
-    object: TargetMode = field(validator=instance_of(TargetMode))
-    """The name of the objective to evaluate."""
-
-    @_max_value_y.default
-    def _max_value_y_default(self) -> float:
-        """Set the default value for the max value."""
-        if isinstance(self.lookup, tuple):
-            _, max = self.lookup
-            return max
-        return self.lookup[self.objective_name].max()
-
-    @_min_value_y.default
-    def _max_value_y_default(self) -> float:
-        """Set the default value for the min value."""
-        if isinstance(self.lookup, tuple):
-            min, _ = self.lookup
-            return min
-        return self.lookup[self.objective_name].min()
+    objective: TargetMode = field(validator=instance_of(TargetMode))
+    """The target mode to evaluate the objective."""
 
     @override
     def evaluate(self, data: DataFrame) -> float:
@@ -55,13 +30,13 @@ class SimpleRegret(ValueMetric):
         Returns:
             float: The computed AUC value.
         """
-        if self.object == TargetMode.MIN:
+        if self.objective == TargetMode.MIN:
             min_found = data[self.to_evaluate_row_header].min()
-            simple_regret = abs(self._max_value_y - min_found)
+            simple_regret = abs(self.best_value - min_found)
             return simple_regret
 
         max_found = data[self.to_evaluate_row_header].max()
-        simple_regret = abs(self._max_value_y - max_found)
+        simple_regret = abs(self.best_value - max_found)
         return simple_regret
 
 
