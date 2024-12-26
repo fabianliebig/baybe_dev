@@ -37,9 +37,20 @@ class ValueMetric(Metric, ABC):
     """The name of the column in the DataFrame that
     contains the number of iterations."""
 
+    target_mode: TargetMode = field(validator=instance_of(TargetMode))
+    """The objective to evaluate."""
+
     to_evaluate_row_header: str = field(validator=instance_of(str))
     """The name of the column in the DataFrame that
     contains the values to evaluate."""
+
+
+@define
+class BestValueMetric(ValueMetric, ABC):
+    """Abstract base class for all regret metrics that require the best value."""
+
+    best_value: float | None = field()
+    """The best value to consider."""
 
 
 @define

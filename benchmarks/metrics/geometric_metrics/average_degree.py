@@ -1,6 +1,5 @@
 """Average degree metric."""
 
-from turtle import pd
 from attrs import define, field
 from attrs.validators import instance_of
 from pandas import DataFrame

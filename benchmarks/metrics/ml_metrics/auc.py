@@ -6,6 +6,7 @@ from attrs.validators import instance_of
 from pandas import DataFrame
 from typing_extensions import override
 
+from baybe.targets.enum import TargetMode
 from benchmarks.metrics.base import ValueMetric
 
 
@@ -23,14 +24,18 @@ class AreaUnderTheCurve(ValueMetric):
         Returns:
             float: The computed AUC value.
         """
-        iter_group = data.groupby(self.doe_iteration_header)
-        x = []
-        y = []
-        for group_key, observed_group in iter_group:
-            y.append(observed_group[self.to_evaluate_row_header].values.mean())
-            x.append(group_key)
-        auc = np.trapz(x, y)
+        data = data.copy()
+        header = self.to_evaluate_row_header
+        if self.target_mode == TargetMode.MIN:
+            data[header] -= data[header].max()
+        elif self.target_mode == TargetMode.MAX:
+            data[header] -= data[header].min()
 
+        iter_group = data.groupby(self.doe_iteration_header)
+        x = iter_group[self.doe_iteration_header].first().values
+        y = iter_group[header].mean().values
+
+        auc = np.trapz(y, x)
         return abs(auc)
 
 
@@ -59,6 +64,7 @@ class NormalizedAreaUnderTheCurve(AreaUnderTheCurve):
         Returns:
             DataFrame: The DataFrame with the specified column normalized.
         """
+        data = data.copy(True)
         data[index_name] = data[index_name].apply(
             lambda x: (x - self._min_value_y) / (self._max_value_y - self._min_value_y)
         )
@@ -91,4 +97,10 @@ class NormalizedAreaUnderTheCurve(AreaUnderTheCurve):
             float: The computed normalized AUC value.
         """
         normalized_y_dataframe = self._normalize_data(data, self.to_evaluate_row_header)
-        return super().evaluate(normalized_y_dataframe)
+
+        iter_group = normalized_y_dataframe.groupby(self.doe_iteration_header)
+        x = iter_group[self.doe_iteration_header].first().values
+        y = iter_group[self.to_evaluate_row_header].mean().values
+
+        auc = np.trapz(y, x)
+        return abs(auc)

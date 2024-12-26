@@ -12,12 +12,8 @@ from benchmarks.metrics.base import ValueMetric
 class CumulativeRegret(ValueMetric):
     """Simple Regret metric."""
 
-    objective_name: str = field(validator=instance_of(str))
-    """The name of the objective to evaluate."""
-
     best_value: float = field(validator=instance_of(float))
     """The maximum value in the lookup table or function."""
-
 
     @override
     def evaluate(self, data: DataFrame) -> float:
