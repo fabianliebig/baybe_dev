@@ -1,10 +1,10 @@
 """Copulative regret."""
 
 from attrs import define, field
-from attrs.validators import instance_of
 from pandas import DataFrame
 from typing_extensions import override
 
+from baybe.targets.enum import TargetMode
 from benchmarks.metrics.base import ValueMetric
 
 
@@ -12,7 +12,7 @@ from benchmarks.metrics.base import ValueMetric
 class CumulativeRegret(ValueMetric):
     """Simple Regret metric."""
 
-    best_value: float = field(validator=instance_of(float))
+    value_range: tuple[float, float] = field()
     """The maximum value in the lookup table or function."""
 
     @override
@@ -25,10 +25,16 @@ class CumulativeRegret(ValueMetric):
         Returns:
             float: The computed AUC value.
         """
+        best_value = (
+            self.value_range[1]
+            if self.target_mode is TargetMode.MAX
+            else self.value_range[0]
+        )
+
         grouped_data = data.groupby(self.doe_iteration_header)
         mean_values = grouped_data[self.to_evaluate_row_header].mean()
         cumulative_regret = 0
         for _, value in mean_values.items():
-            cumulative_regret += abs(self.best_value - value)
+            cumulative_regret += abs(best_value - value)
 
         return cumulative_regret

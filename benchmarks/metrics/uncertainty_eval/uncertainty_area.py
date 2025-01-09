@@ -1,6 +1,7 @@
 """Uncertainty Area metric implementation."""
 
 import numpy as np
+from attrs import define
 from pandas import DataFrame
 from typing_extensions import override
 
@@ -22,7 +23,7 @@ class UncertaintyCurveArea(ValueMetric):
         Returns:
             float: The computed uncertainty area value.
         """
-        data = data.copy()
+        data = data.copy(True)
         header = self.to_evaluate_row_header
         if self.target_mode == TargetMode.MIN:
             data[header] -= data[header].max()

@@ -24,16 +24,17 @@ class AreaUnderTheCurve(ValueMetric):
         Returns:
             float: The computed AUC value.
         """
-        data = data.copy()
+        data = data.copy(True)
         header = self.to_evaluate_row_header
+        data = data.groupby(self.doe_iteration_header)[header].mean().reset_index()
+
         if self.target_mode == TargetMode.MIN:
             data[header] -= data[header].max()
         elif self.target_mode == TargetMode.MAX:
             data[header] -= data[header].min()
 
-        iter_group = data.groupby(self.doe_iteration_header)
-        x = iter_group[self.doe_iteration_header].first().values
-        y = iter_group[header].mean().values
+        x = data[self.doe_iteration_header].values
+        y = data[header].values
 
         auc = np.trapz(y, x)
         return abs(auc)
@@ -96,11 +97,7 @@ class NormalizedAreaUnderTheCurve(AreaUnderTheCurve):
         Returns:
             float: The computed normalized AUC value.
         """
-        normalized_y_dataframe = self._normalize_data(data, self.to_evaluate_row_header)
+        iterations = data[self.doe_iteration_header].unique().size
+        normalization_factor = (self._max_value_y - self._min_value_y) * iterations
 
-        iter_group = normalized_y_dataframe.groupby(self.doe_iteration_header)
-        x = iter_group[self.doe_iteration_header].first().values
-        y = iter_group[self.to_evaluate_row_header].mean().values
-
-        auc = np.trapz(y, x)
-        return abs(auc)
+        return super().evaluate(data) / normalization_factor

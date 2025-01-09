@@ -28,25 +28,17 @@ class Recall(BestInputGeometricMetric):
     @override
     def _count_within_distance(self, data: DataFrame):
         """Count the number of good results within the distance."""
-        excepted_distance = self.radius_for_optimal_input**2
-        categorical_parameter_map = self._represent_categorical_as_numeric(data)
+        data_numeric = self._get_geometric_input_as_dataframe(data)
 
         number_of_good_results = 0
         for optimal_input in self.optimal_function_inputs:
-            for _, row in data.iterrows():
-                input_values = row[self.used_input_column_header]
-                iter_best = self._parse_input_from_dataframe(input_values)
+            for _, row in data_numeric.iterrows():
+                iter_best = row.to_dict()
                 distance = 0
                 for key, value in optimal_input.items():
-                    if key in categorical_parameter_map:
-                        distance += (
-                            categorical_parameter_map[key][value]
-                            - categorical_parameter_map[key][iter_best[key]]
-                        ) ** 2
-                        continue
                     distance += (value - iter_best[key]) ** 2
 
-                if distance <= excepted_distance:
+                if distance <= self.excepted_distance:
                     number_of_good_results += 1
                     break
 

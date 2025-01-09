@@ -13,9 +13,6 @@ from benchmarks.metrics.base import BestValueMetric
 class FeasibilityRate(BestValueMetric):
     """Count the number of converging iterations."""
 
-    best_value: float = field(validator=instance_of(float))
-    """Best value to compare the result with."""
-
     converge_area_percentage: float = field(validator=instance_of(float))
     """The percentage of the area to consider as the convergence area.
     all the values within this area will be considered as converged."""
@@ -30,18 +27,25 @@ class FeasibilityRate(BestValueMetric):
         Returns:
             float: The computed feasible rate value.
         """
+        data = data.copy(True)
         feasible_count = 0
         grouped_data = data.groupby(self.doe_iteration_header)
         for _, group in grouped_data:
             if self.target_mode == TargetMode.MIN:
-                if group[self.to_evaluate_row_header].min() <= (
-                    self.best_value * self.converge_area_percentage
-                ):
+                compare_value = (
+                    1 - 1 * self.converge_area_percentage
+                    if self.best_value == 0
+                    else self.best_value * self.converge_area_percentage
+                )
+                if group[self.to_evaluate_row_header].min() <= (compare_value):
                     feasible_count += 1
             if self.target_mode == TargetMode.MAX:
-                if group[self.to_evaluate_row_header].max() >= (
-                    self.best_value * self.converge_area_percentage
-                ):
+                compare_value = (
+                    -1 + 1 * self.converge_area_percentage
+                    if self.best_value == 0
+                    else self.best_value * self.converge_area_percentage
+                )
+                if group[self.to_evaluate_row_header].max() >= (compare_value):
                     feasible_count += 1
 
         return feasible_count / len(grouped_data)
