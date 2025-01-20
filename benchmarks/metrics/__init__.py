@@ -13,16 +13,19 @@ from benchmarks.metrics.ml_metrics.auc import (
 )
 from benchmarks.metrics.ml_metrics.cumulative_regret import CumulativeRegret
 from benchmarks.metrics.ml_metrics.simple_regret import SimpleRegret
-from benchmarks.metrics.random_comparsion import PointsBetterRandomRatio
+from benchmarks.metrics.point_ratio_comparsion import (
+    PointsDifferedRatio,
+    PointVarianceDifferRatio,
+)
 from benchmarks.metrics.slope_based.convergence_rate import (
     MeanConvergenceRateMetric,
-    MeanDynamicConvergenceRateMetric,
     MedianGlobalBestConvergenceValue,
     MedianPointToPointConvergenceValue,
 )
 from benchmarks.metrics.slope_based.mean_slope import MeanSlope
 from benchmarks.metrics.uncertainty_eval import (
     FeasibilityRate,
+    MeanVariance,
     OverlappingUncertaintyArea,
     UncertaintyCurveArea,
 )
@@ -41,10 +44,12 @@ __all__ = [
     "MeanDynamicConvergenceRateMetric",
     "SimpleRegret",
     "NormalizedAreaUnderTheCurve",
-    "PointsBetterRandomRatio",
+    "PointsDifferedRatio",
     "KuiperMetric",
     "KolmogorovSmirnovMetric",
     "MedianPointToPointConvergenceValue",
     "MeanSlope",
     "MedianGlobalBestConvergenceValue",
+    "PointVarianceDifferRatio",
+    "MeanVariance",
 ]

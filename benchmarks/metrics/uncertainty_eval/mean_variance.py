@@ -1,4 +1,4 @@
-"""Metrics for using the gradient between two points of the optimization."""
+"""Metrics for using the variance per iteration."""
 
 from attrs import define
 from interface_meta import override
@@ -8,8 +8,8 @@ from benchmarks.metrics.base import ValueMetric
 
 
 @define
-class MeanSlope(ValueMetric):
-    """Calculate the mean slope of the optimization."""
+class MeanVariance(ValueMetric):
+    """Calculate the mean variance over the iterations."""
 
     @override
     def evaluate(self, data: DataFrame) -> float:
@@ -22,12 +22,6 @@ class MeanSlope(ValueMetric):
             float: The computed convergence rate value.
         """
         grouped_data = data.groupby(self.doe_iteration_header)
-        mean_values = grouped_data[self.to_evaluate_row_header].mean()
+        variance_values = grouped_data[self.to_evaluate_row_header].var()
 
-        if len(mean_values) < 2:
-            raise ValueError("The data must contain at least 2 iterations.")
-
-        start_point = mean_values.iloc[0]
-        end_point = mean_values.iloc[-1]
-
-        return (end_point - start_point) / len(mean_values)
+        return variance_values.mean()

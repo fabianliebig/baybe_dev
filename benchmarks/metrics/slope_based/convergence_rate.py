@@ -23,21 +23,17 @@ class MeanConvergenceRateMetric(BestValueMetric):
         Returns:
             float: The computed convergence rate value.
         """
-        data = data.copy(True)
         grouped_data = data.groupby(self.doe_iteration_header)
         mean_values = grouped_data[self.to_evaluate_row_header].mean()
-        if self.target_mode == TargetMode.MAX:
-            filtered_mean_values = mean_values[mean_values < self.best_value]
-        else:
-            filtered_mean_values = mean_values[mean_values > self.best_value]
 
-        start_point = filtered_mean_values.iloc[0]
-        best_point = filtered_mean_values.iloc[-1]
+        start_point = mean_values.iloc[0]
+        best_point = mean_values.iloc[-1]
 
         return 1 - (
             (abs((self.best_value - best_point) / (self.best_value - start_point)))
             ** (1 / len(mean_values))
         )
+
 
 @define
 class MedianPointToPointConvergenceValue(BestValueMetric):

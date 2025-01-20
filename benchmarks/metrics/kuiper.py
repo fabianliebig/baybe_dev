@@ -55,9 +55,8 @@ class KuiperMetric(ValueMetric):
             .values
         )
 
-        ground_truth_copy = self.ground_truth.copy(True)
         normalized_ground_truth = (
-            ground_truth_copy.groupby(self.doe_iteration_header)[
+            self.ground_truth.groupby(self.doe_iteration_header)[
                 self.to_evaluate_row_header
             ]
             .mean()
