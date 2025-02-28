@@ -33,9 +33,9 @@ from baybe.utils.plotting import create_example_plots
 
 SMOKE_TEST = "SMOKE_TEST" in os.environ
 
-N_DOE_ITERATIONS = 2 if SMOKE_TEST else 20
-N_MC_ITERATIONS = 2 if SMOKE_TEST else 200
-BATCH_SIZE = 1 if SMOKE_TEST else 2
+N_DOE_ITERATIONS = 30
+N_MC_ITERATIONS = 30
+BATCH_SIZE = 1 
 
 ### Lookup functionality and data creation
 
@@ -164,13 +164,4 @@ results = simulate_scenarios(
 # impact on the outcome, with chemical encodings performing much better than
 # traditional ones at almost no extra cost.
 
-results.rename(columns={"Scenario": "Substance Encoding"}, inplace=True)
-ax = sns.lineplot(
-    data=results,
-    marker="o",
-    markersize=10,
-    x="Num_Experiments",
-    y="yield_CumBest",
-    hue="Substance Encoding",
-)
-create_example_plots(ax=ax, base_name="full_lookup")
+results.to_csv("test.csv")
