@@ -147,3 +147,75 @@ class PointVarianceDifferRatio(PointsDifferedRatio):
                     successful_points_count += 1
 
         return successful_points_count / data[self.doe_iteration_header].unique().size
+
+
+@define
+class PointsPositionScore(ValueMetric):
+    """Calculates the ratio the positional relationship of points."""
+
+    class Scope(Enum):
+        """Enumeration for the scope of the evaluation."""
+
+        PERFOMANCE = "performance"
+        VARIANCE = "variance"
+
+    data_baseline: DataFrame = field(validator=instance_of(DataFrame))
+    """The data frame which will be compared in the evaluation."""
+
+    calculate_scope: Scope = field(validator=instance_of(Scope))
+    """The scope of the evaluation to be used for the evaluation."""
+
+    @override
+    def evaluate(self, data: DataFrame) -> float:
+        """Provide a Value between -1 and 1 based on the position of the points."""
+        if self.calculate_scope == PointsPositionScore.Scope.PERFOMANCE:
+            return self._evaluate_performance_point_ratios(data)
+        return self._evaluate_variance_point_ratios(data)
+
+    def _evaluate_performance_point_ratios(self, data):
+        """Calculate the ratio of points between data frames based on the count mode."""
+        better_points = PointsDifferedRatio(
+            self.target_mode,
+            self.to_evaluate_row_header,
+            self.data_baseline,
+            PointsDifferedRatio.CountMode.COUNT_BETTER,
+        )
+        worse_points = PointsDifferedRatio(
+            self.target_mode,
+            self.to_evaluate_row_header,
+            self.data_baseline,
+            PointsDifferedRatio.CountMode.COUNT_WORSE,
+        )
+        equal_points = PointsDifferedRatio(
+            self.target_mode,
+            self.to_evaluate_row_header,
+            self.data_baseline,
+            PointsDifferedRatio.CountMode.COUNT_EQUAL,
+        )
+        return (
+            2 * better_points.evaluate(data) + equal_points.evaluate(data) / 2
+        ) - worse_points.evaluate(data)
+
+    def _evaluate_variance_point_ratios(self, data):
+        """Calculate the ratio of points between data frames based on the count mode."""
+        better_points = PointVarianceDifferRatio(
+            self.target_mode,
+            self.to_evaluate_row_header,
+            self.data_baseline,
+            PointVarianceDifferRatio.CountMode.COUNT_BETTER,
+        )
+        worse_points = PointVarianceDifferRatio(
+            self.target_mode,
+            self.to_evaluate_row_header,
+            self.data_baseline,
+            PointVarianceDifferRatio.CountMode.COUNT_WORSE,
+        )
+        equal_points = PointVarianceDifferRatio(
+            self.target_mode,
+            self.to_evaluate_row_header,
+            self.data_baseline,
+            PointVarianceDifferRatio.CountMode.COUNT_EQUAL,
+        )
+        return (
+            2 * better_points.evaluate(data) + equal_points.evaluate(data) / 2
+        ) - worse_points.evaluate(data)

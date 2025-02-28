@@ -5,8 +5,7 @@ from attrs import define
 from interface_meta import override
 from pandas import DataFrame
 
-from baybe.targets.enum import TargetMode
-from benchmarks.metrics.base import BestValueMetric
+from benchmarks.metrics.base import BestValueMetric, ValueMetric
 
 
 @define
@@ -36,7 +35,7 @@ class MeanConvergenceRateMetric(BestValueMetric):
 
 
 @define
-class MedianPointToPointConvergenceValue(BestValueMetric):
+class MedianPointToPointConvergenceValue(ValueMetric):
     """Estimated convergence rate metric."""
 
     @override
@@ -74,7 +73,7 @@ class MedianPointToPointConvergenceValue(BestValueMetric):
 
             alpha_estimates.append(alpha)
 
-        return np.median(alpha_estimates)
+        return np.mean(alpha_estimates)
 
 
 @define
@@ -116,4 +115,4 @@ class MedianGlobalBestConvergenceValue(BestValueMetric):
 
             alpha_estimates.append(alpha)
 
-        return np.median(alpha_estimates)
+        return np.mean(alpha_estimates)

@@ -1,12 +1,24 @@
 """Init file for the metrics module."""
 
+from benchmarks.metrics.assertion_utils import (
+    ComparisonOperator,
+    PatternBasedAssertion,
+    PatternItemPureMetricComparison,
+    PatternItemRatioThreshold,
+    PatternItemValueThreshold,
+)
 from benchmarks.metrics.geometric_metrics import (
     AverageDegree,
     AverageDistance,
     Precision,
     Recall,
 )
-from benchmarks.metrics.kuiper import KolmogorovSmirnovMetric, KuiperMetric
+from benchmarks.metrics.kuiper import (
+    KolmogorovSmirnovMetric,
+    KuiperMetric,
+    ConvergenceLocationRelationship,
+    PositionalRelation,
+)
 from benchmarks.metrics.ml_metrics.auc import (
     AreaUnderTheCurve,
     NormalizedAreaUnderTheCurve,
@@ -15,6 +27,7 @@ from benchmarks.metrics.ml_metrics.cumulative_regret import CumulativeRegret
 from benchmarks.metrics.ml_metrics.simple_regret import SimpleRegret
 from benchmarks.metrics.point_ratio_comparsion import (
     PointsDifferedRatio,
+    PointsPositionScore,
     PointVarianceDifferRatio,
 )
 from benchmarks.metrics.slope_based.convergence_rate import (
@@ -52,4 +65,12 @@ __all__ = [
     "MedianGlobalBestConvergenceValue",
     "PointVarianceDifferRatio",
     "MeanVariance",
+    "ComparisonOperator",
+    "PatternItemRatioThreshold",
+    "PatternBasedAssertion",
+    "PatternItemPureMetricComparison",
+    "PointsPositionScore",
+    "PatternItemValueThreshold",
+    "ConvergenceLocationRelationship",
+    "PositionalRelation",
 ]
