@@ -28,7 +28,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       - name: Execute Lambda function
         run: |
-          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  1, "container_compute": "XL", "repository": "${{ github.repository }}" }'  response.json
+          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  1, "container_compute": "XS", "repository": "${{ github.repository }}" }'  response.json
           cat response.json
           if ! grep -q '"statusCode": 200' response.json; then
             echo "Lambda function failed. statusCode is not 200."
@@ -38,17 +38,14 @@ jobs:
   benchmark-test:
     needs: add-runner
     runs-on: self-hosted
-    env:
-      BAYBE_BENCHMARKING_PERSISTENCE_PATH: ${{ secrets.TEST_RESULT_S3_BUCKET }}
+    timeout-minutes: 1500
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v5
-        id: setup-python
-        with:
-          python-version: "3.10"
-      - name: Benchmark
+      - name: Infinite Loop with Minute Counter
         run: |
-          pip install '.[benchmarking]'
-          python -m benchmarks
+          minutes=0
+          while true; do
+            echo "Minutes: $minutes"
+            sleep 60
+            minutes=$((minutes + 1))
+          done
+
