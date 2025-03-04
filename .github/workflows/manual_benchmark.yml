@@ -19,9 +19,8 @@ jobs:
       - name: build matrix
         id: json
         run: |
-          benchmarks_to_execute=${{ env.GLOBAL_BENCHMARK_JSON }}
-          echo $benchmarks_to_execute
-          echo "::set-output name=benchmarks_to_execute::$benchmarks_to_execute"
+          benchmarks_to_execute='{ "repository": ${{ env.GLOBAL_BENCHMARK_JSON }} }'
+          echo "benchmarks_to_execute=$benchmarks_to_execute" >> "$GITHUB_OUTPUT"
 
   add-runner:
     needs: prepare
