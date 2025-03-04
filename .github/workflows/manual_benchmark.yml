@@ -20,7 +20,7 @@ jobs:
         id: json
         run: |
           benchmarks_to_execute='{ "repository": ${{ env.GLOBAL_BENCHMARK_JSON }} }'
-          echo 'benchmarks_to_execute=$benchmarks_to_execute' >> '$GITHUB_OUTPUT'
+          echo 'benchmarks_to_execute=$benchmarks_to_execute' >> "$GITHUB_OUTPUT"
 
   add-runner:
     needs: prepare
