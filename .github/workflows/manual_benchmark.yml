@@ -25,6 +25,8 @@ jobs:
   add-runner:
     needs: prepare
     runs-on: ubuntu-latest
+    env:
+      benchmarks_to_execute: ${{ needs.prepare.outputs.benchmarks_to_execute }}
     steps:
       - name: Generate a token
         id: generate-token
@@ -42,8 +44,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
       - name: Execute Lambda function
-        env:
-          benchmarks_to_execute: ${{ needs.prepare.outputs.benchmarks_to_execute }}
         run: |
           echo "${{ fromJson(env.benchmarks_to_execute) }}"
           number_of_tasks=$(echo "${{ fromJson(env.benchmarks_to_execute) }}" | jq '. | length')
