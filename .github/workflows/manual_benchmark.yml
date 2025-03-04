@@ -9,9 +9,6 @@ on:
         default: false
         type: boolean
 
-env:
-  GLOBAL_BENCHMARK_JSON: '["synthetic_2C1D_1C"]'
-
 permissions:
   contents: read
   id-token: write
@@ -26,24 +23,22 @@ jobs:
       - name: Build matrix
         id: json
         run: |
-          benchmarks_to_execute="[]"
+          benchmarks_to_execute='{"benchmark_list": []}'
 
-          for input_name in $(jq -r 'keys[]' <<< "${{ toJson(github.event.inputs) }}"); do
-            echo "$input_name"
-            input_value=$(jq -r ".${input_name}" <<< "${{ toJson(github.event.inputs) }}")
-            echo "$input_value"
-            if [ "$input_value" == "true" ]; then
-              benchmarks_to_execute=$(jq --arg input_name "$input_name" '. += [$input_name]' <<< "$benchmarks_to_execute")
+          for key in $(echo '${{ toJson(github.event.inputs) }}' | jq -r 'keys_unsorted[]'); do
+            value=$(echo '${{ toJson(github.event.inputs) }}' | jq -r --arg k "$key" '.[$k]')
+            if [ "$value" = "true" ]; then
+              benchmarks_to_execute=$(echo "$benchmarks_to_execute" | jq --arg v "$key" '.benchmark_list += [$v]')
             fi
           done
-          
+                   
           echo "benchmarks_to_execute=$benchmarks_to_execute" >> "$GITHUB_OUTPUT"
       - name: count tasks
         id: count_tasks
         run: |
           number_of_tasks=$(echo '${{ steps.json.outputs.benchmarks_to_execute }}' | jq '.benchmark_list | length')
           echo "number_of_tasks=$number_of_tasks" >> "$GITHUB_OUTPUT"
-
+          
   add-runner:
     needs: prepare
     runs-on: ubuntu-latest
