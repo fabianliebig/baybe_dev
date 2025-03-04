@@ -25,7 +25,7 @@ jobs:
       - name: count tasks
         id: count_tasks
         run: |
-          number_of_tasks=$(echo ' ${{ steps.json.outputs.benchmarks_to_execute }}' | jq '. | length')
+          number_of_tasks=$(echo ${{ steps.json.outputs.benchmarks_to_execute }} | jq '. | length')
           echo "number_of_tasks=$number_of_tasks" >> "$GITHUB_OUTPUT"
 
   add-runner:
