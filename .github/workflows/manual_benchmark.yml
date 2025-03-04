@@ -2,9 +2,15 @@ name: Run Benchmark
 
 on:
   workflow_dispatch:
+    inputs:
+      synthetic_2C1D_1C:
+        description: "Run synthetic_2C1D_1C benchmark"
+        required: false
+        default: false
+        type: boolean
 
 env:
-  GLOBAL_BENCHMARK_JSON: '["synthetic_2C1D_1C", "synthetic_2C1D_1C"]'
+  GLOBAL_BENCHMARK_JSON: '["synthetic_2C1D_1C"]'
 
 permissions:
   contents: read
@@ -17,10 +23,19 @@ jobs:
       benchmarks_to_execute: ${{ steps.json.outputs.benchmarks_to_execute }}
       number_of_tasks: ${{ steps.count_tasks.outputs.number_of_tasks }}
     steps:
-      - name: build matrix
+      - name: Build matrix
         id: json
         run: |
-          benchmarks_to_execute='{ "benchmark_list": ${{ env.GLOBAL_BENCHMARK_JSON }} }'
+          # Initialize an empty array
+          benchmarks_to_execute="[]"
+
+          # Iterate over each input and add to array if true
+          for input_name in $(jq -r 'keys[]' <<< "${{ toJson(github.event.inputs) }}"); do
+            input_value=$(jq -r ".${input_name}" <<< "${{ toJson(github.event.inputs) }}")
+            if [ "$input_value" == "true" ]; then
+              benchmarks_to_execute=$(jq --arg input_name "$input_name" '. += [$input_name]' <<< "$benchmarks_to_execute")
+            fi
+          done
           echo "benchmarks_to_execute=$benchmarks_to_execute" >> "$GITHUB_OUTPUT"
       - name: count tasks
         id: count_tasks
@@ -76,5 +91,4 @@ jobs:
       - name: Benchmark
         run: |
           pip install '.[benchmarking]'
-          echo "Running benchmark ${{ matrix.benchmark_list }}"
           python -m benchmarks --benchmark-list "${{ matrix.benchmark_list }}"
