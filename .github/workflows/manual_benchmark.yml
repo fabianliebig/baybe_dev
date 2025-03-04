@@ -46,7 +46,7 @@ jobs:
       - name: Execute Lambda function
         run: |
           echo '${{ env.benchmarks_to_execute }}'
-          number_of_tasks=$(echo '${{ env.benchmarks_to_execute }}'' | jq '. | length')
+          number_of_tasks=$(echo '${{ env.benchmarks_to_execute }}' | jq '. | length')
           echo "Number of tasks: $number_of_tasks"
           aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  $number_of_tasks, "container_compute": "M", "repository": "${{ github.repository }}" }'  response.json
           cat response.json
