@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  GLOBAL_BENCHMARK_JSON: '["synthetic_2C1D_1C"]'
+  GLOBAL_BENCHMARK_JSON: "['synthetic_2C1D_1C']"
 
 permissions:
   contents: read
@@ -19,8 +19,8 @@ jobs:
       - name: build matrix
         id: json
         run: |
-          benchmarks_to_execute='{ "repository": ${{ env.GLOBAL_BENCHMARK_JSON }} }'
-          echo 'benchmarks_to_execute=$benchmarks_to_execute' >> "$GITHUB_OUTPUT"
+          benchmarks_to_execute="{ 'repository': ${{ env.GLOBAL_BENCHMARK_JSON }} }"
+          echo "benchmarks_to_execute=$benchmarks_to_execute" >> "$GITHUB_OUTPUT"
 
   add-runner:
     needs: prepare
@@ -45,8 +45,8 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       - name: Execute Lambda function
         run: |
-          echo '$env.benchmarks_to_execute'
-          number_of_tasks=$(echo '$env.benchmarks_to_execute' | jq '. | length')
+          echo "${{ env.benchmarks_to_execute }}"
+          number_of_tasks=$(echo "${{ env.benchmarks_to_execute }}" | jq '. | length')
           echo "Number of tasks: $number_of_tasks"
           aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  $number_of_tasks, "container_compute": "M", "repository": "${{ github.repository }}" }'  response.json
           cat response.json
