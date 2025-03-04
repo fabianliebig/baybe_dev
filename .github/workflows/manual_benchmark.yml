@@ -26,16 +26,17 @@ jobs:
       - name: Build matrix
         id: json
         run: |
-          # Initialize an empty array
           benchmarks_to_execute="[]"
 
-          # Iterate over each input and add to array if true
           for input_name in $(jq -r 'keys[]' <<< "${{ toJson(github.event.inputs) }}"); do
+            echo "$input_name"
             input_value=$(jq -r ".${input_name}" <<< "${{ toJson(github.event.inputs) }}")
+            echo "$input_value"
             if [ "$input_value" == "true" ]; then
               benchmarks_to_execute=$(jq --arg input_name "$input_name" '. += [$input_name]' <<< "$benchmarks_to_execute")
             fi
           done
+          
           echo "benchmarks_to_execute=$benchmarks_to_execute" >> "$GITHUB_OUTPUT"
       - name: count tasks
         id: count_tasks
