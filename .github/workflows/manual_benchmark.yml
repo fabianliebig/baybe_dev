@@ -31,7 +31,8 @@ jobs:
               benchmarks_to_execute="$benchmarks_to_execute \"$key\","
             fi
           done
-          benchmarks_to_execute=$(echo $benchmarks_to_execute | sed 's/,]/]/')
+          benchmarks_to_execute=$(echo "$benchmarks_to_execute" | sed 's/,$//')
+          benchmarks_to_execute="$benchmarks_to_execute ]}"
 
           echo "benchmarks_to_execute=$benchmarks_to_execute" >> "$GITHUB_OUTPUT"
 
