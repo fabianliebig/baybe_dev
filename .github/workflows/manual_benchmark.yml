@@ -14,7 +14,7 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      benchmarks_to_execute: ${{ steps.json.outputs.benchmarks_to_execute.benchmark_list }}
+      benchmarks_to_execute: ${{ steps.json.outputs.benchmarks_to_execute }}
       number_of_tasks: ${{ steps.count_tasks.outputs.number_of_tasks }}
     steps:
       - name: build matrix
@@ -76,4 +76,5 @@ jobs:
       - name: Benchmark
         run: |
           pip install '.[benchmarking]'
-          python -m benchmarks --benchmark-list "${{ matrix.benchmarks_to_execute }}"
+          echo "Running benchmark ${{ matrix.benchmark_list }}"
+          python -m benchmarks --benchmark-list "${{ matrix.benchmark_list }}"
