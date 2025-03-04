@@ -3,12 +3,27 @@ name: Run Benchmark
 on:
   workflow_dispatch:
 
+env:
+  GLOBAL_JSON: '["synthetic_2C1D_1C"]'
+
 permissions:
   contents: read
   id-token: write
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      benchmarks_to_execute: ${{ steps.json.outputs.benchmarks_to_execute }}
+    steps:
+      - name: build matrix
+        id: json
+        run: |
+          benchmarks_to_execute=${{ env.GLOBAL_JSON }}
+          echo "benchmarks_to_execute=$benchmarks_to_execute" >> "$GITHUB_OUTPUT"
+
   add-runner:
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - name: Generate a token
@@ -28,7 +43,8 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       - name: Execute Lambda function
         run: |
-          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  1, "container_compute": "XL", "repository": "${{ github.repository }}" }'  response.json
+          number_of_tasks=$(echo "${{ fromJson(needs.prepare.outputs.benchmarks_to_execute) }}" | jq '. | length')
+          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  $number_of_tasks, "container_compute": "M", "repository": "${{ github.repository }}" }'  response.json
           cat response.json
           if ! grep -q '"statusCode": 200' response.json; then
             echo "Lambda function failed. statusCode is not 200."
@@ -36,8 +52,11 @@ jobs:
           fi
 
   benchmark-test:
-    needs: add-runner
+    needs: [prepare, add-runner]
     runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare.outputs.benchmarks_to_execute) }}
     timeout-minutes: 1440
     env:
       BAYBE_BENCHMARKING_PERSISTENCE_PATH: ${{ secrets.TEST_RESULT_S3_BUCKET }}
@@ -52,4 +71,4 @@ jobs:
       - name: Benchmark
         run: |
           pip install '.[benchmarking]'
-          python -m benchmarks
+          python -m benchmarks "${{ matrix.benchmarks_to_execute }}"
