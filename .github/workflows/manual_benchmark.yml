@@ -23,14 +23,15 @@ jobs:
       - name: Build matrix
         id: json
         run: |
-          benchmarks_to_execute='{"benchmark_list": []}'
+          benchmarks_to_execute='{"benchmark_list": ['
 
           for key in $(echo '${{ toJson(github.event.inputs) }}' | jq -r 'keys_unsorted[]'); do
             value=$(echo '${{ toJson(github.event.inputs) }}' | jq -r --arg k "$key" '.[$k]')
             if [ "$value" = "true" ]; then
-              benchmarks_to_execute=$(echo "$benchmarks_to_execute" | jq --arg v "$key" '.benchmark_list += [$v]')
+              benchmarks_to_execute="$benchmarks_to_execute \"$key\","
             fi
           done
+          benchmarks_to_execute=$(echo $benchmarks_to_execute | sed 's/,]/]/')
 
           echo "benchmarks_to_execute=$benchmarks_to_execute" >> "$GITHUB_OUTPUT"
 
