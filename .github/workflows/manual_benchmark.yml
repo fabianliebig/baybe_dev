@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  GLOBAL_BENCHMARK_JSON: '["synthetic_2C1D_1C"]''
+  GLOBAL_BENCHMARK_JSON: '["synthetic_2C1D_1C"]'
 
 permissions:
   contents: read
