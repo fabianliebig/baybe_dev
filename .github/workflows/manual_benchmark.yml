@@ -20,12 +20,12 @@ jobs:
       - name: build matrix
         id: json
         run: |
-          benchmarks_to_execute='{ "repository": ${{ env.GLOBAL_BENCHMARK_JSON }} }'
+          benchmarks_to_execute='{ "benchmark_list": ${{ env.GLOBAL_BENCHMARK_JSON }} }'
           echo "benchmarks_to_execute=$benchmarks_to_execute" >> "$GITHUB_OUTPUT"
       - name: count tasks
         id: count_tasks
         run: |
-          number_of_tasks=$(echo "${{ steps.json.outputs.benchmarks_to_execute }}" | jq '. | length')
+          number_of_tasks=$(echo '${{ steps.json.outputs.benchmarks_to_execute.benchmark_list }}' | jq '. | length')
           echo "number_of_tasks=$number_of_tasks" >> "$GITHUB_OUTPUT"
 
   add-runner:
