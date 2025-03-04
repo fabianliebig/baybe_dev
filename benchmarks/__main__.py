@@ -34,6 +34,7 @@ def run_all_benchmarks():
 
 def run_specific_benchmarks(benchmark_subset_names: list[str]):
     """Run a subset based on the benchmark name."""
+    print("Running specific benchmarks:", benchmark_subset_names)
     for benchmark_name in benchmark_subset_names:
         benchmark = BENCHMARKS[benchmark_name]
         result = benchmark()
