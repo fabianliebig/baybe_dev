@@ -82,6 +82,9 @@ jobs:
   add-runner:
     needs: prepare
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare.outputs.benchmarks_to_execute) }}
     steps:
       - name: Generate a token
         id: generate-token
