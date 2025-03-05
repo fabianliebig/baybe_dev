@@ -27,15 +27,17 @@ def save_benchmark_data(benchmark: Benchmark, result: Result):
 
 def run_all_benchmarks():
     """Run all benchmarks."""
-    for benchmark in BENCHMARKS.keys():
+    for benchmark in BENCHMARKS:
         result = benchmark()
         save_benchmark_data(benchmark, result)
 
 
-def run_specific_benchmarks(benchmark_subset_names: list[str]):
+def run_specific_benchmarks(benchmark_subset_names: set[str]):
     """Run a subset based on the benchmark name."""
-    for benchmark_name in benchmark_subset_names:
-        benchmark = BENCHMARKS[benchmark_name]
+    for benchmark in BENCHMARKS:
+        if benchmark.name not in benchmark_subset_names:
+            continue
+
         result = benchmark()
         save_benchmark_data(benchmark, result)
 
@@ -51,7 +53,8 @@ def main():
         run_all_benchmarks()
         return
 
-    run_specific_benchmarks(args.benchmark_list)
+    benchmark_execute_set = set(args.benchmark_list)
+    run_specific_benchmarks(benchmark_execute_set)
 
 
 if __name__ == "__main__":

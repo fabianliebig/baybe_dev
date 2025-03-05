@@ -19,7 +19,7 @@ on:
         type: boolean
 
 env:
-  DEFAULT_BENCHMARKS: '["synthetic_2C1D_1C", "synthetic_2C1D_1C"]'
+  DEFAULT_BENCHMARKS: '["synthetic_2C1D_1C"]'
 
 permissions:
   contents: read
@@ -79,7 +79,7 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix: ${{ fromJson(needs.prepare.outputs.benchmarks_to_execute) }}
     steps:
       - name: Generate a token
