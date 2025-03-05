@@ -30,7 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       benchmarks_to_execute: ${{ steps.set_benchmarks.outputs.benchmarks_to_execute }}
-      number_of_tasks: ${{ steps.set_benchmarks.outputs.number_of_tasks }}
     steps:
       - name: Build matrix from inputs
         if: ${{ github.event.inputs.group_selection == 'Manually selected benchmarks' || github.event.inputs.group_selection == 'All benchmarks' }}
@@ -76,8 +75,6 @@ jobs:
             echo "Please run at least one benchmark"
             exit 1
           fi
-          echo "number_of_tasks=$number_of_tasks" >> "$GITHUB_OUTPUT"
-
 
   add-runner:
     needs: prepare
@@ -103,7 +100,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       - name: Execute Lambda function
         run: |
-          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  ${{needs.prepare.outputs.number_of_tasks}}, "container_compute": "M", "repository": "${{ github.repository }}" }'  response.json
+          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  1, "container_compute": "M", "repository": "${{ github.repository }}" }'  response.json
           cat response.json
           if ! grep -q '"statusCode": 200' response.json; then
             echo "Lambda function failed. statusCode is not 200."
