@@ -19,7 +19,7 @@ on:
         type: boolean
 
 env:
-  DEFAULT_BENCHMARKS: '["synthetic_2C1D_1C"]'
+  DEFAULT_BENCHMARKS: '["synthetic_2C1D_1C", "synthetic_2C1D_1C"]'
 
 permissions:
   contents: read
