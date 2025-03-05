@@ -67,8 +67,7 @@ jobs:
       - name: Set benchmarks output
         id: set_benchmarks
         run: |
-          echo "benchmarks_to_execute=${{ env.benchmarks_to_execute }}" >> "$GITHUB_OUTPUT"
-          echo "${{ env.benchmarks_to_execute }}"
+          echo 'benchmarks_to_execute=${{ env.benchmarks_to_execute }}' >> "$GITHUB_OUTPUT"
           number_of_tasks=$(echo '${{ env.benchmarks_to_execute }}' | jq '.benchmark_list | length')
           echo "$number_of_tasks"
           if [ "$number_of_tasks" -le 0 ]; then
