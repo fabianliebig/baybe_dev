@@ -6,7 +6,7 @@ on:
       group_selection:
         description: "Group of Benchmarks to Run:"
         required: true
-        default: "All benchmarks"
+        default: "All"
         type: choice
         options:
           - "Manually Selected"
@@ -47,7 +47,7 @@ jobs:
         id: build_matrix_from_inputs
         run: |
           benchmarks_to_execute='{"benchmark_list": ['
-          run_all_benchmarks=${{ github.event.inputs.group_selection == 'All benchmarks' }}
+          run_all_benchmarks=${{ github.event.inputs.group_selection == 'All' }}
 
           for key in $(echo '${{ toJson(github.event.inputs) }}' | jq -r 'keys_unsorted[]'); do
             if [ "$key" != "group_selection" ]; then
@@ -69,7 +69,7 @@ jobs:
           benchmarks_to_execute='{"benchmark_list": []}'
           run_all_benchmarks="${{ github.event.inputs.group_selection }}"
 
-          if [ "$run_all_benchmarks" = "Default group" ]; then
+          if [ "$run_all_benchmarks" = "Default" ]; then
             benchmarks_to_execute='{"benchmark_list": ${{ env.DEFAULT_BENCHMARKS }} }'
           fi
 
