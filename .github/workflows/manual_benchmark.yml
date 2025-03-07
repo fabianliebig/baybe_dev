@@ -12,16 +12,6 @@ on:
           - "Manually Selected"
           - "All"
           - "Default"
-      compute_selection:
-        description: "Compute type for the runner:"
-        required: true
-        default: "8 vCPU and 16GB RAM"
-        type: choice
-        options:
-          - "2 vCPU and 4GB RAM"
-          - "4 vCPU and 8GB RAM"
-          - "8 vCPU and 16GB RAM"
-          - "16 vCPU and 32GB RAM"
       synthetic_2C1D_1C:
         description: "synthetic_2C1D_1C benchmark"
         required: false
@@ -41,7 +31,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       benchmarks_to_execute: ${{ steps.set_benchmarks.outputs.benchmarks_to_execute }}
-      chosen_compute: ${{ steps.set_benchmarks.outputs.chosen_compute }}
     steps:
       - name: Build matrix from inputs
         if: ${{ github.event.inputs.group_selection == 'Manually Selected' || github.event.inputs.group_selection == 'All' }}
@@ -87,9 +76,6 @@ jobs:
             exit 1
           fi
 
-          chosen_compute=$(echo '${{ env.COMPUTE_TYPE_MAP }}' | jq -r --arg compute_selection "${{ github.event.inputs.compute_selection }}" '.[$compute_selection]')
-          echo "chosen_compute=$chosen_compute" >> "$GITHUB_OUTPUT"
-
   add-runner:
     needs: prepare
     runs-on: ubuntu-latest
@@ -114,7 +100,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       - name: Execute Lambda function
         run: |
-          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  1, "container_compute": "${{needs.prepare.outputs.chosen_compute}}", "repository": "${{ github.repository }}" }'  response.json
+          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  1, "container_compute": "M", "repository": "${{ github.repository }}" }'  response.json
           
           if ! grep -q '"statusCode": 200' response.json; then
             echo "Lambda function failed. statusCode is not 200."
