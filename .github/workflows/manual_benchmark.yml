@@ -19,8 +19,7 @@ on:
         type: boolean
 
 env:
-  COMPUTE_TYPE_MAP: '{"2 vCPU and 4GB RAM": "XS", "4 vCPU and 8GB RAM": "S", "8 vCPU and 16GB RAM": "M", "16 vCPU and 32GB RAM": "L"}'
-  DEFAULT_BENCHMARKS: '["synthetic_2C1D_1C"]'
+  DEFAULT_BENCHMARKS: '["synthetic_2C1D_1C", "synthetic_2C1D_1C"]'
 
 permissions:
   contents: read
@@ -101,7 +100,7 @@ jobs:
       - name: Execute Lambda function
         run: |
           aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  1, "container_compute": "M", "repository": "${{ github.repository }}" }'  response.json
-          
+
           if ! grep -q '"statusCode": 200' response.json; then
             echo "Lambda function failed. statusCode is not 200."
             exit 1
