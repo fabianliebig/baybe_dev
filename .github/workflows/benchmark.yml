@@ -81,7 +81,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: Github_Add_Runner
           aws-region: eu-central-1
-      - name: Login to Amazon ECR
+      - name: Login to Amazon ECR 
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
       - name: Execute Lambda function
