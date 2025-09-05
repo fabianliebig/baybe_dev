@@ -34,7 +34,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       - name: Execute Lambda function
         run: |
-          echo ${{ toJson(matrix.py-version) }}
+          echo ${{  fromJson(toJson(matrix.py-version)) }}
 
   gputest:
     needs: [add-gpu-machine]
