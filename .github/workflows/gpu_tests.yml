@@ -45,7 +45,7 @@ jobs:
     needs: [add-gpu-machine]
     strategy:
       matrix:
-        py-version:  ${{ fromJson(needs.add-gpu-machine.outputs.py-version) }}
+        py-version:  ${{ needs.add-gpu-machine.outputs.py-version }}
     name: GPU Tests ${{ matrix.py-version.semantic }}
     runs-on: gpu
     steps:
