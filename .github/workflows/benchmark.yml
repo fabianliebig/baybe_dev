@@ -129,4 +129,4 @@ jobs:
       - name: Install the project
         run: uv sync --locked --extra benchmarking
       - name: Benchmark
-        run: uv python -W ignore -m benchmarks --benchmark-list "${{ matrix.benchmark_list }}"
+        run: uv python -m benchmarks --benchmark-list "${{ matrix.benchmark_list }}" -- -W ignore
