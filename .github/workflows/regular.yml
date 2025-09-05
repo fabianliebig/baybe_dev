@@ -176,8 +176,6 @@ jobs:
                       {semantic: '3.11', tox: 'py311'},
                       {semantic: '3.12', tox: 'py312'},
                       {semantic: '3.13', tox: 'py313'} ]
-    outputs:
-      py-version: ${{ matrix.py-version }}
     steps:
 
       - name: Configure AWS credentials

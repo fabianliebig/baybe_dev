@@ -187,8 +187,6 @@ jobs:
       fail-fast: true
       matrix:
         py-version: [ {semantic: '3.10', tox: 'py310'} ]
-    outputs:
-      py-version: ${{ matrix.py-version }}
     steps:
 
       - name: Configure AWS credentials
