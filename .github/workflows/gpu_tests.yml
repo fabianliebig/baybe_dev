@@ -20,7 +20,10 @@ jobs:
       fail-fast: true
       matrix:
         py-version: [ {semantic: '3.10', tox: 'py310'} ]
+    outputs:
+      py-version: ${{ matrix.py-version }}
     steps:
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -71,4 +74,3 @@ jobs:
         run: |
           pip install tox-uv
           tox -e gputest-${{ matrix.py-version.tox }}
-          nvidia-smi
