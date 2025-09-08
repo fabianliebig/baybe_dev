@@ -23,15 +23,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      py-version: ${{ steps.set-py-version.outputs.py-version }}
+    steps:
+      - name: Set Python version
+        id: set-py-version
+        run: |
+          if [[ -z "${{ github.event.inputs.py-version }}" ]]; then
+            echo 'py-version=[{"semantic": "3.10", "tox": "py310"}]' >> "$GITHUB_OUTPUT"
+          else
+            echo "py-version=[${{ github.event.inputs.py-version }}]" >> "$GITHUB_OUTPUT"
+          fi
+        
   add-gpu-machine:
     runs-on: ubuntu-latest
+    needs: prepare
     permissions:
       contents: read
       id-token: write
     strategy:
       fail-fast: true
       matrix:
-        py-version: [${{ github.event.inputs.py-version }}]
+        py-version: ${{ fromJson(needs.prepare.outputs.py-version) }}
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -47,10 +62,10 @@ jobs:
           echo "Requesting GPU runner"
 
   gputest:
-    needs: [add-gpu-machine]
+    needs: [add-gpu-machine, prepare]
     strategy:
       matrix:
-        py-version: [${{ github.event.inputs.py-version }}]
+        py-version: ${{ fromJson(needs.prepare.outputs.py-version) }}
     name: GPU Tests ${{ matrix.py-version.semantic }}
     runs-on: ubunutu-latest
     steps:
