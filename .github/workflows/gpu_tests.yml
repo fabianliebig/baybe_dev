@@ -1,6 +1,17 @@
 name: GPU Tests
 on:
   workflow_dispatch:
+    inputs:
+      py-version:
+        description: "Python version to test"
+        required: true
+        default: "3.10"
+        type: choice
+        options:
+          - "{semantic: '3.10', tox: 'py310'}"
+          - "{semantic: '3.11', tox: 'py311'}"
+          - "{semantic: '3.12', tox: 'py312'}"
+
   workflow_call:
 
 env:
@@ -20,7 +31,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        py-version: [ {semantic: '3.10', tox: 'py310'} ]
+        py-version: [${{ github.event.inputs.py-version }}]
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -44,7 +55,7 @@ jobs:
     needs: [add-gpu-machine]
     strategy:
       matrix:
-        py-version: [ {semantic: '3.10', tox: 'py310'} ]
+        py-version: [${{ github.event.inputs.py-version }}]
     name: GPU Tests ${{ matrix.py-version.semantic }}
     runs-on: gpu
     steps:
