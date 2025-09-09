@@ -2,52 +2,48 @@ name: GPU Tests
 on:
   workflow_dispatch:
     inputs:
-      py-version:
-        description: "Python version to test"
+      semantic:
         required: true
+        type: string
         default: "3.10"
-        type: choice
-        options:
-          - "{semantic: '3.10', tox: 'py310'}"
-          - "{semantic: '3.11', tox: 'py311'}"
-          - "{semantic: '3.12', tox: 'py312'}"
-
+      tox:
+        required: true
+        type: string
+        default: "py310"
   workflow_call:
+    secrets:
+      APP_PRIVATE_KEY:
+        required: true
+      AWS_ROLE_TO_ASSUME:
+        required: true
+    inputs:
+      semantic:
+        required: true
+        type: string
+        default: "3.10"
+      tox:
+        required: true
+        type: string
+        default: "py310"
 
-env:
-  COVERAGE_OVERALL_THRESH: 70      # threshold for overall coverage check
-  COVERAGE_INDIVIDUAL_THRESH: 45   # threshold for individual coverage check
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    outputs:
-      py-version: ${{ steps.set-py-version.outputs.py-version }}
-    steps:
-      - name: Set Python version
-        id: set-py-version
-        run: |
-          if [[ -z "${{ github.event.inputs.py-version }}" ]]; then
-            echo 'py-version=[{"semantic": "3.10", "tox": "py310"}]' >> "$GITHUB_OUTPUT"
-          else
-            echo "py-version=[${{ github.event.inputs.py-version }}]" >> "$GITHUB_OUTPUT"
-          fi
-        
   add-gpu-machine:
     runs-on: ubuntu-latest
-    needs: prepare
     permissions:
       contents: read
       id-token: write
-    strategy:
-      fail-fast: true
-      matrix:
-        py-version: ${{ fromJson(needs.prepare.outputs.py-version) }}
     steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -59,26 +55,28 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       - name: Execute Lambda function
         run: |
-          echo "Requesting GPU runner"
+          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  1, "container_compute": "XS-GPU", "repository": "${{ github.repository }}" }'  response.json
+
+          if ! grep -q '"statusCode": 200' response.json; then
+            echo "Lambda function failed. statusCode is not 200."
+            exit 1
+          fi
 
   gputest:
-    needs: [add-gpu-machine, prepare]
-    strategy:
-      matrix:
-        py-version: ${{ fromJson(needs.prepare.outputs.py-version) }}
-    name: GPU Tests ${{ matrix.py-version.semantic }}
-    runs-on: ubunutu-latest
+    needs: [add-gpu-machine]
+    name: GPU Tests ${{  inputs.semantic }}
+    runs-on: gpu
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         id: setup-python
         with:
-          python-version: ${{ matrix.py-version.semantic }}
+          python-version: ${{ inputs.semantic }}
       - uses: actions/cache@v4
         with:
-          path: .tox/gputest-${{ matrix.py-version.tox }}
-          key: gputest-${{ matrix.py-version.tox }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('tox.ini') }}
+          path: .tox/gputest-${{ inputs.tox }}
+          key: gputest-${{ inputs.tox }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('tox.ini') }}
       - name: Run GPU tests
         run: |
           pip install tox-uv
-          tox -e gputest-${{ matrix.py-version.tox }}
+          tox -e gputest-${{ inputs.tox }}

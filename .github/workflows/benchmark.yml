@@ -20,7 +20,7 @@ on:
 
 env:
   TRANSFER_LEARNING_BENCHMARKS: '["aryl_halide_CT_IM_tl","aryl_halide_IP_CP_tl","aryl_halide_CT_I_BM_tl","direct_arylation_tl_temperature","easom_tl_47_negate_noise5","hartmann_tl_3_20_15","michalewicz_tl_continuous"]'
-  SYNTHETIC_BENCHMARKS: '["synthetic_2C1D_1C"]'
+  SYNTHETIC_BENCHMARKS: '["synthetic_2C1D_1C","hartmann_3d_discretized","hartmann_6d","hartmann_3d"]'
   ALL_BENCHMARKS: '["direct_arylation_multi_batch","direct_arylation_single_batch","aryl_halide_CT_IM_tl","aryl_halide_IP_CP_tl","aryl_halide_CT_I_BM_tl","direct_arylation_tl_temperature","easom_tl_47_negate_noise5","hartmann_tl_3_20_15","michalewicz_tl_continuous","synthetic_2C1D_1C","hartmann_3d_discretized","hartmann_6d","hartmann_3d"]'
   NON_TL_BENCHMARKS: '["direct_arylation_multi_batch","direct_arylation_single_batch","synthetic_2C1D_1C","hartmann_3d_discretized","hartmann_6d","hartmann_3d"]'
 
@@ -75,6 +75,12 @@ jobs:
       fail-fast: true
       matrix: ${{ fromJson(needs.prepare.outputs.benchmarks_to_execute) }}
     steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -86,7 +92,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       - name: Execute Lambda function
         run: |
-          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ secrets.RUNNER_ATTACH_API_KEY }}", "count_container":  1, "container_compute": "M", "repository": "${{ github.repository }}" }'  response.json
+          aws lambda invoke --function-name jit_runner_register_and_create_runner_container  --cli-binary-format raw-in-base64-out --payload '{"github_api_secret": "${{ steps.generate-token.outputs.token }}", "count_container":  1, "container_compute": "M", "repository": "${{ github.repository }}" }'  response.json
 
           if ! grep -q '"statusCode": 200' response.json; then
             echo "Lambda function failed. statusCode is not 200."
