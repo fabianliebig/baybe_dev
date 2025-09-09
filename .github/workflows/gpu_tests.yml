@@ -6,6 +6,7 @@ on:
         required: true
         type: string
         default: "3.10"
+        
       tox:
         required: true
         type: string
