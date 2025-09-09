@@ -12,7 +12,7 @@ on:
         default: "py310"
   workflow_call:
     secrets:
-      APP_PRIVATE_KEY:
+      RUNNER_ATTACH_API_KEY:
         required: true
       AWS_ROLE_TO_ASSUME:
         required: true
