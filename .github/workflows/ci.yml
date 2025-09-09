@@ -186,7 +186,8 @@ jobs:
       id-token: write
     strategy:
       matrix:
-        py-version: [ {semantic: '3.10', tox: 'py310'} ]
+        py-version: ${{ github.event_name == 'workflow_dispatch' && fromJSON('[{"py-version":{"semantic":"3.10","tox":"py310"} }]') || fromJSON('[]') }}
+
     with:
       semantic: ${{ matrix.py-version.semantic }}
       tox: ${{ matrix.py-version.tox }} 
