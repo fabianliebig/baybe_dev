@@ -176,9 +176,18 @@ jobs:
           sed '$d' |
           awk '{if ( $1<${{ env.COVERAGE_INDIVIDUAL_THRESH }} ) exit 1 }'
 
-  gputest:
-    needs: typecheck
+  prepgpu:
     if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare GPU Tests
+        run: |
+          echo "Preparing for GPU tests..."
+
+  gputest:
+    needs: [prepgpu]
     uses: ./.github/workflows/gpu_tests.yml
     secrets: inherit
     permissions:
@@ -186,8 +195,7 @@ jobs:
       id-token: write
     strategy:
       matrix:
-        py-version: ${{ github.event_name == 'workflow_dispatch' && fromJSON('[{"py-version":{"semantic":"3.10","tox":"py310"} }]') || fromJSON('[]') }}
-
+        py-version: [{semantic:"3.10",tox:"py310"}]
     with:
       semantic: ${{ matrix.py-version.semantic }}
       tox: ${{ matrix.py-version.tox }} 
