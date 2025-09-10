@@ -178,12 +178,15 @@ jobs:
 
   gputest:
     needs: [typecheck]
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' }}
     uses: ./.github/workflows/gpu_tests.yml
     secrets: inherit
     permissions:
       contents: read
       id-token: write
+    strategy:
+      matrix:
+        py-version: [{semantic: '3.10', tox: 'py310'} ]
     with:
-      semantic: "3.10"
-      tox: "py310"
+      semantic: ${{ matrix.py-version.semantic }}
+      tox: ${{ matrix.py-version.tox }} 
