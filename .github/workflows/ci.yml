@@ -176,26 +176,13 @@ jobs:
           sed '$d' |
           awk '{if ( $1<${{ env.COVERAGE_INDIVIDUAL_THRESH }} ) exit 1 }'
 
-  prepgpu:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-    needs: typecheck
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Prepare GPU Tests
-        run: |
-          echo "Preparing for GPU tests..."
-
   gputest:
-    needs: [prepgpu]
+    needs: [typecheck]
     uses: ./.github/workflows/gpu_tests.yml
     secrets: inherit
     permissions:
       contents: read
       id-token: write
-    strategy:
-      matrix:
-        py-version: []
     with:
-      semantic: ${{ matrix.py-version.semantic }}
-      tox: ${{ matrix.py-version.tox }} 
+      semantic: "3.10"
+      tox: "py310"
