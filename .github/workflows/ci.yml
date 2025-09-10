@@ -195,7 +195,7 @@ jobs:
       id-token: write
     strategy:
       matrix:
-        py-version: [{semantic:"3.10",tox:"py310"}]
+        py-version: []
     with:
       semantic: ${{ matrix.py-version.semantic }}
       tox: ${{ matrix.py-version.tox }} 
