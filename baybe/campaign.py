@@ -510,9 +510,11 @@ class Campaign(SerialMixin):
             )
             pending_experiments.__class__ = _ValidatedDataFrame
 
+        # TODO: Proper fix for the allow_* flags required
         if (
             pending_experiments is None
             and (cache := self._cached_recommendation) is not None
+            and self.allow_recommending_already_recommended is not UNSPECIFIED
             and self.allow_recommending_already_recommended
             and len(cache) == batch_size
         ):
