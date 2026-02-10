@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Support for Python 3.14
+- `Settings` class for unified and streamlined settings management
+- Settings options to (de-)activate recommendation caching / dataframe preprocessing
+- Settings option for random seed control
+- `identify_non_dominated_configurations` method to `Campaign` and `Objective`
+  for determining the Pareto front
+- Interpoint constraints for continuous search spaces
+
+### Breaking Changes
+- `ContinuousLinearConstraint.to_botorch` now returns a collection of constraint tuples
+  instead of a single tuple (needed for interpoint constraints)
+
+### Removed
+- `parallel_runs` argument from `simulate_scenarios`, since parallelization
+  can now be conveniently controlled via the new `Settings` mechanism
+
+### Deprecations
+- `set_random_seed` and `temporary_seed` utility functions
+- The environment variables
+  `BAYBE_NUMPY_USE_SINGLE_PRECISION`/`BAYBE_TORCH_USE_SINGLE_PRECISION` have been
+  replaced with the variables
+  `BAYBE_USE_SINGLE_PRECISION_NUMPY`/`BAYBE_USE_SINGLE_PRECISION_TORCH` linked to the
+  corresponding `use_single_precision_numpy`/`use_single_precision_torch` attributes of
+  the new `Settings` class
+- The environment variable `BAYBE_DEACTIVATE_POLARS` has been replaced with
+  `BAYBE_USE_POLARS` linked to the `use_polars` attribute of the new `Settings` class
+- The environment variable `BAYBE_PARALLEL_SIMULATION_RUNS` has been replaced with
+  `BAYBE_PARALLELIZE_SIMULATION_RUNS` linked to the `parallelize_simulation_runs`
+  attribute of the new `Settings` class
+
 ## [0.14.3] - 2026-02-10
 ### Fixed
 - Deserialization of `NumericalTarget` objects using the optional `constructor` field
@@ -177,6 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Python version specifier now also allows patch versions of Python 3.13
 
 ## [0.13.1] - 2025-06-06
+### Added
 - Support for Python 3.13
 - `random_tie_break` flag to `farthest_point_sampling` to toggle between 
   random or deterministic sampling for equidistant cases
