@@ -504,10 +504,12 @@ class Campaign(SerialMixin):
                 numerical_measurements_must_be_within_tolerance=False,
             )
 
+        # TODO: Proper fix for the allow_* flags required
         if (
             active_settings.cache_campaign_recommendations
             and (cache := self._cached_recommendation) is not None
             and pending_experiments is None
+            and self.allow_recommending_already_recommended is not UNSPECIFIED
             and self.allow_recommending_already_recommended
             and len(cache) == batch_size
         ):
